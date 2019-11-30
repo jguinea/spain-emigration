@@ -1,0 +1,21 @@
+
+path {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: .5px;
+  }
+    
+  circle {
+    fill: #fff;
+    fill-opacity: 0.4;
+    stroke: #111;
+  }
+  
+  path.active {
+    fill: pink;
+  }
+  circle.active {
+    fill: blue;
+  }
+  
+  
