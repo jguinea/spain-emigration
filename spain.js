@@ -29,7 +29,8 @@ projection.scale(scale)
 
 var svg = d3.select("body").append("svg")
 .attr("width", width)
-.attr("height", height);
+.attr("height", height)
+.attr("id","map");
 
 //Guardar info de geometría
 provincias = geodata
@@ -50,14 +51,13 @@ var myColor = d3.scaleLinear().domain(domain)
 //Dibujarlo todo
 draw_leyend(domain)
 draw_map(provincia_seleccionada,destinos,semestre)
-
-
+button_listner()
 
 //Dibujar el mapa
 function draw_map(provincia_seleccionada,destinos,semestre){
   name_seleccion = nombres_provincias.find(obj => obj.id == provincia_seleccionada)["nm"];
   total = get_total(destinos,semestre)
-  $(".where").text("Peña que huye de "+name_seleccion+": "+total)
+  $("#where").text("Peña que huye de "+name_seleccion+": "+total)
   svg.selectAll("path")
     .data(provincias.features)
     // features es la lista de provincias
@@ -72,7 +72,7 @@ function draw_map(provincia_seleccionada,destinos,semestre){
         num = get_semestre(d["properties"]["cod_prov"],destinos,semestre)
         d3.select(this)
         .style("fill","#222831")
-        $(".who").text("Peña de "+name_seleccion+" a "+name_destino+": "+num)
+        $("#who").text("Peña de "+name_seleccion+" a "+name_destino+": "+num)
       })
       .on("mouseout",function(d){
         d3.select(this)
@@ -143,6 +143,60 @@ function draw_leyend(domain){
   return xAxis;
 }
 
+function draw_time_slider(){
+  
+  // Time
+  var dataTime = d3.range(0, 11.5).map(function(d) {
+    return new Date(2008 + d, 0, 3);
+  });
+
+  var sliderTime = d3
+    .sliderBottom()
+    .min(d3.min(dataTime))
+    .max(d3.max(dataTime))
+    .step(1000 * 60 * 60 * 24 * 365/2)
+    .width(300)
+    .tickFormat(d3.timeFormat('%Y'))
+    .tickValues(dataTime)
+    .default(new Date(2008, 0, 3))
+    .on('onchange', val => {
+      semesterId=21-parseInt(val*2/(1000 * 60 * 60 * 24 * 366)-76)
+      semestre=semestres[semesterId]
+      update_map(provincia_seleccionada,destinos,semestre)
+      d3.select('p#value-time').text(d3.timeFormat('%B %Y')(val));
+    });
+
+  var gTime = d3
+    .select('div#slider-time')
+    .append('svg')
+    .attr('width', 500)
+    .attr('height', 100)
+    .append('g')
+    .attr('transform', 'translate(30,30)');
+
+  gTime.call(sliderTime);
+
+  d3.select('p#value-time').text(d3.timeFormat('%B %Y')(sliderTime.value()));
+
+}
+function delete_slider(){
+  
+  $("#value-time").empty()
+  $("#slider-time").empty()
+}
+function button_listner(){
+  const buttons = d3.selectAll('.time_selection');
+  buttons.on('change', function(d) {
+    if (this.value=="total"){
+      delete_slider()
+      update_map(provincia_seleccionada,destinos,"total")
+    }
+    if (this.value=="slider"){
+      draw_time_slider()
+      update_map(provincia_seleccionada,destinos,"2008S1")
+    }
+  });
+}
 //Busca en la lista de colores el color correspondiente al código de provincia
 function getColor(provincia, provincia_seleccionada,semestre){
     if (provincia == provincia_seleccionada)
@@ -237,7 +291,7 @@ function get_total(destinos,semestre){
   }
 
 }
-
+  
 function resize(){
 
   viewWidth = $(window).innerWidth();
@@ -258,34 +312,5 @@ function resize(){
   d3.selectAll("path").attr('d', path);
    
 }
-/**
- 
-var data=[1, 2,3,4]
-var sliderStep = d3
-    .sliderBottom()
-    .min(d3.min(data))
-    .max(d3.max(data))
-    .width(300)
-    .tickFormat(d3.format('.2%'))
-    .ticks(5)
-    .step(0.005)
-    .default(0.015)
-    .on('onchange', val => {
-      d3.select('p#value-step').text(d3.format('.2%')(val));
-    });
-
-  var gStep = d3
-    .select('div#slider-step')
-    .append('svg')
-    .attr('width', 500)
-    .attr('height', 100)
-    .append('g')
-    .attr('transform', 'translate(30,30)');
-
-  gStep.call(sliderStep);
-
-  d3.select('p#value-step').text(d3.format('.2%')(sliderStep.value()));
 
 
-
- */

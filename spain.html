@@ -4,11 +4,16 @@
     <link rel="stylesheet" href="spain.css">
 </head>
 <body>
-    
-<h1>La peña que se va y tal: visualization</h1>
-<div class="row align-items-center">
-    <div class="col-sm-2"><p id="value-step"></p></div>
-    <div class="col-sm"><div id="slider-step"></div></div>
+ 
+  <h1 id="title">La peña que se va y tal: visualization</h1>
+  <div id="select">
+    <input class="time_selection" type="radio" name="time" value="total" checked ="checked"> Total<br>
+    <input class="time_selection" type="radio" name="time" value="slider"> Select Semester<br>  
+  </div>
+ 
+  <div class="slider">
+    <div class="col-sm-2"><p id="value-time"></p></div>
+    <div class="col-sm"><div id="slider-time"></div></div>
   </div>
  
 <script src="//d3js.org/d3.v4.min.js"></script>
@@ -20,8 +25,12 @@
 <script src="data/nombres_provincias.js"></script>
 <script src="//d3js.org/topojson.v1.js"></script>
 <script src="spain.js"></script>
-<br/><b class="where"></b>
-<br/><b class="who"></b>
+
+<div id="info">
+  <br/><b id="where"></b>
+  <br/><b id="who"></b>
+</div>
+
 <div class="container"></div>
 </body>
 </html> 
