@@ -1,46 +1,57 @@
+@font-face {
+  font-family: 'Glegoo-Regular';
+  src: url('Glegoo/Glegoo-Regular.eot');
+  src: url('Glegoo/Glegoo-Regular.eot?#iefix') format('embedded-opentype'),
+       url('Glegoo/Glegoo-Regular.woff') format('woff'),
+       url('Glegoo/Glegoo-Regular.ttf') format('truetype'),
+       url('Glegoo/Glegoo-Regular.svg#Glegoo-Regular') format('svg');
+}
 
+h1,div {
+  font-family: 'Glegoo-Regular',sans-serif;
+}
 path {
-    fill: #ccc;
-    stroke: #fff;
-    stroke-width: .5px;
-  }
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: .5px;
+}
     
-  circle {
-    fill: #fff;
-    fill-opacity: 0.4;
-    stroke: #111;
-  }
+circle {
+  fill: #fff;
+  fill-opacity: 0.4;
+  stroke: #111;
+}
   
-  path.active {
-    fill: pink;
-  }
-  circle.active {
-    fill: blue;
-  }
-  .title{
+path.active {
+  fill: pink;
+}
+circle.active {
+  fill: blue;
+}
+.title {
+  position:absolute;
+  left:1%;
+  top: 0px;
+}
+#map{
+  position:absolute;
+  left:1%;
+  top: 18%;
+  z-index: -1;
+}
+.slider{
+  position:absolute;
+  left:1%;
+  top:25%;
+} 
+#info{
+  position:absolute;
+  left:1%;
+  bottom:3%;
+}
+.select{
     position:absolute;
-    left:1%;
-    top: 0px;
-  }
-  #map{
-    position:absolute;
-    left:1%;
-    top: 18%;
-    z-index: -1;
-  }
-  .slider{
-    position:absolute;
-    left:1%;
-    top:25%;
-    } 
-  #info{
-    position:absolute;
-    left:1%;
-    bottom:3%;
-  }
-  .select{
-      position:absolute;
-      left:20%;
-      top:5%;
-      }
+    left:20%;
+    top:5%;
+}
   
