@@ -3,34 +3,39 @@
 
 var viewWidth = window.innerWidth;
 var viewHeight = window.innerHeight;
+var test = d3.select("#test");
 
 var margin = {top: 60, right: 20, bottom: 60, left: 40};
 var width = viewWidth - margin.left - margin.right;
 var height = viewHeight - margin.top - margin.bottom;
+//test.select("p")
+//  .text("TEST--window height: " + height);
 var padding_leyend = height/20;
-var leyend_height = height/100;
-var leyend_width = width/3 - (padding_leyend * 2);
-var padding = 15;
-d3.select(window).on('resize', resize);
+//test.append("p").text("padding_leyend: "+padding_leyend);
+var leyend_height = height/70;
+var leyend_width = width/3 - (padding_leyend * 3);
+//test.append("p").text("leyend_width: "+leyend_width);
+//var padding = 15; not used??
+d3.select(window).on('resize', resize); //zoom
 
 const semestres = ["2018S2","2018S1","2017S2","2017S1","2016S2","2016S1","2015S2","2015S1","2014S2","2014S1","2013S2","2013S1","2012S2","2012S1","2011S2","2011S1","2010S2","2010S1","2009S2","2009S1","2008S2","2008S1"]
 
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
 var projection = d3.geoConicConformalSpain()
-.translate([width / 2, height / 2])
+  .translate([width / 2, height / 2]);
 // Añadir la proyección al path
-var path = d3.geoPath()
-.projection(projection)
+var path = d3.geoPath().projection(projection);
 
-var scale = height /0.2;
-projection.scale(scale)
-.translate([width / 2, height / 2]);
+//tamaño de la proyeccion
+var scale = height/0.2;
+projection.scale(scale);
+ // .translate([width / 2, height / 2]);
 
 var svg = d3.select("body").append("svg")
-.attr("width", width)
-.attr("height", height)
-.attr("id","map");
+  .attr("width", width)
+  .attr("height", height)
+  .attr("id","map");
 
 //Guardar info de geometría
 provincias = geodata
@@ -38,26 +43,29 @@ provincias = geodata
 //JSON importado en el html 
 var data = emigration_data
 
-//Datos para Teruel (estático)
-var provincia_seleccionada = 44
-var destinos=get_destinos(provincia_seleccionada,data)
-var semestre="total"
-domain = get_domain(provincia_seleccionada,destinos,semestre)
+//Datos para Madrid (estático)
+var num_prov_selected = 28;
+var lista_destinos = get_destinos(num_prov_selected,data);
+var semestre= "total";
+domain = get_domain(num_prov_selected,lista_destinos,semestre);
+
 //Escala de colores
-var myColor = d3.scaleLinear().domain(domain)
-  .range(["yellow","red"])
+var myColor = d3.scaleLinear()
+  .domain(domain)
+  .range(["blue","red"]);
 
 
 //Dibujarlo todo
-draw_leyend(domain)
-draw_map(provincia_seleccionada,destinos,semestre)
+draw_leyend(domain);
+draw_map(num_prov_selected,lista_destinos,semestre)
 button_listner()
 
 //Dibujar el mapa
-function draw_map(provincia_seleccionada,destinos,semestre){
-  name_seleccion = nombres_provincias.find(obj => obj.id == provincia_seleccionada)["nm"];
-  total = get_total(destinos,semestre)
-  $("#where").text("Peña que huye de "+name_seleccion+": "+total)
+function draw_map(num_prov_selected,lista_destinos,semestre){
+  name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
+  total = get_total(lista_destinos,semestre)
+  $("#where").text("Peña que huye de "+name_prov_selected+": "+total)
+  
   svg.selectAll("path")
     .data(provincias.features)
     // features es la lista de provincias
@@ -65,37 +73,36 @@ function draw_map(provincia_seleccionada,destinos,semestre){
     .attr("d", path)
     .attr("class","map")
     .style("fill",function(d){
-      return getColor(d["properties"]["cod_prov"],provincia_seleccionada,semestre);
+      return getColor(d["properties"]["cod_prov"],num_prov_selected,semestre);
     })
     .on("mouseover",function(d) {
-        name_destino = d["properties"]["name"]
-        num = get_semestre(d["properties"]["cod_prov"],destinos,semestre)
-        d3.select(this)
+      name_destino = d["properties"]["name"]
+      numEmmigrants = getNumEmmigrants(d["properties"]["cod_prov"],lista_destinos,semestre)
+      d3.select(this)
         .style("fill","#222831")
-        $("#who").text("Peña de "+name_seleccion+" a "+name_destino+": "+num)
+        $("#who").text("Peña de "+name_prov_selected+" a "+name_destino+": "+numEmmigrants)
+    })
+    .on("mouseout",function(d){
+      d3.select(this)
+      .style("fill",function(d){
+        return getColor(d["properties"]["cod_prov"],num_prov_selected,semestre);
       })
-      .on("mouseout",function(d){
-        d3.select(this)
-        .style("fill",function(d){
-          return getColor(d["properties"]["cod_prov"],provincia_seleccionada,semestre);
-        })
     })
     .on("click",function(d){
-      destinos_new=get_destinos(d["properties"]["cod_prov"],data)
-      update_map(d["properties"]["cod_prov"],destinos_new,semestre)
+      lista_destinos_new=get_destinos(d["properties"]["cod_prov"],data)
+      update_map(d["properties"]["cod_prov"],lista_destinos_new,semestre)
     })  
 }
 
 
-function update_map(provincia_seleccionada_new,destinos_new,semestre_new){
+function update_map(num_prov_selected_new,lista_destinos_new,semestre_new){
   $(".map").remove()
-  provincia_seleccionada=provincia_seleccionada_new
-  destinos=destinos_new
+  num_prov_selected=num_prov_selected_new
+  lista_destinos=lista_destinos_new
   semestre=semestre_new
-  domain = get_domain(provincia_seleccionada,destinos,semestre)
-  myColor = d3.scaleLinear().domain(domain)
-  .range(["yellow","red"])
-  draw_map(provincia_seleccionada,destinos,semestre)
+  domain = get_domain(num_prov_selected,lista_destinos,semestre)
+  myColor.domain(domain);
+  draw_map(num_prov_selected,lista_destinos,semestre)
   $(".leyend").remove()
   draw_leyend(domain)
   
@@ -106,7 +113,7 @@ function update_map(provincia_seleccionada_new,destinos_new,semestre_new){
 function draw_leyend(domain){
   var range_third = domain
   
-  var leyend_data = [{"color":"yellow","value":range_third[0]},{"color":"red","value":range_third[1]}];
+  var leyend_data = [{"color":"blue","value":range_third[0]},{"color":"red","value":range_third[1]}];
   var extent = d3.extent(leyend_data, d => d.value);
  
 
@@ -162,7 +169,7 @@ function draw_time_slider(){
     .on('onchange', val => {
       semesterId=21-parseInt(val*2/(1000 * 60 * 60 * 24 * 366)-76)
       semestre=semestres[semesterId]
-      update_map(provincia_seleccionada,destinos,semestre)
+      update_map(num_prov_selected,lista_destinos,semestre)
       d3.select('p#value-time').text(d3.timeFormat('%B %Y')(val));
     });
 
@@ -189,67 +196,68 @@ function button_listner(){
   buttons.on('change', function(d) {
     if (this.value=="total"){
       delete_slider()
-      update_map(provincia_seleccionada,destinos,"total")
+      update_map(num_prov_selected,lista_destinos,"total")
     }
     if (this.value=="slider"){
       draw_time_slider()
-      update_map(provincia_seleccionada,destinos,"2008S1")
+      update_map(num_prov_selected,lista_destinos,"2008S1")
     }
   });
 }
 //Busca en la lista de colores el color correspondiente al código de provincia
-function getColor(provincia, provincia_seleccionada,semestre){
-    if (provincia == provincia_seleccionada)
+function getColor(provincia_destino, provincia_origen,semestre){
+    if (provincia_destino == provincia_origen)
       return "#CCC"
       //colorea la provincia seleccionada distinto
 
-    value = get_semestre(provincia,destinos,semestre)
+    value = getNumEmmigrants(provincia_destino,lista_destinos,semestre)
     return myColor(value)
  }
 
 //Carga la lista de destinos a partir de la provincia de procedencia
 function get_destinos(procedencia,data){
-  destinos = []
+  lista_destinos = [];
   for (row in data){
     if (data[row]["Procedencia"]==procedencia){
-      destinos.push(data[row])
+      lista_destinos.push(data[row])
     }
   }
-  return destinos
+  return lista_destinos
 }
 
 //Devuelve el dato de personas que emigraron a una provincia en particular de una lista de provincias en un semestre
-function get_semestre(destino,destinos,semestre){
+function getNumEmmigrants(provincia_destino,lista_destinos,semestre){
   
   if (semestre=="total"){
-    for (i in destinos){
-      if (destinos[i]["Destino"]==destino){
-        var temp=0
+    for (i in lista_destinos){
+      if (lista_destinos[i]["Destino"]==provincia_destino){
+        var temp=0;
         for (s in semestres){
-          temp=temp+destinos[i][semestres[s]]
+          temp=temp+lista_destinos[i][semestres[s]]
         }
         return temp
       }
     }
   }
-  
-  for (i in destinos){
-      if (destinos[i]["Destino"]==destino)
-        return destinos[i][semestre]
+  else{
+    for (i in lista_destinos){
+        if (lista_destinos[i]["Destino"]==provincia_destino)
+          return lista_destinos[i][semestre];
+    }
   }
   
 }
 
 //Devuelve el máximo y mínimo valor de gente que ha emigrado a alguna provincia
-function get_domain(procedencia,destinos,semestre){
+function get_domain(procedencia,lista_destinos,semestre){
   var max=-1
   var min = 10000000
   var totales=[]
-  for (i in destinos){
+  for (i in lista_destinos){
     var temp = 0
-    if (destinos[i]["Destino"]> 0& destinos[i]["Destino"]!=procedencia){
+    if (lista_destinos[i]["Destino"]> 0& lista_destinos[i]["Destino"]!=procedencia){
       for (s in semestres){
-        temp=temp+destinos[i][semestres[s]]
+        temp=temp+lista_destinos[i][semestres[s]]
         totales.push(temp)
       }
     }
@@ -262,34 +270,34 @@ function get_domain(procedencia,destinos,semestre){
         min=totales[i]
   }
   else{
-    for (i in destinos){
-      if (destinos[i][semestre]>max&destinos[i]["Destino"]>0)
-        max=destinos[i][semestre]
-      if (destinos[i][semestre]<min & destinos[i]["Destino"]!=procedencia)
-        min=destinos[i][semestre]
+    for (i in lista_destinos){
+      if (lista_destinos[i][semestre]>max&lista_destinos[i]["Destino"]>0)
+        max=lista_destinos[i][semestre]
+      if (lista_destinos[i][semestre]<min & lista_destinos[i]["Destino"]!=procedencia)
+        min=lista_destinos[i][semestre]
     }
   }
   return [min,max]
 }
-function get_total(destinos,semestre){
+
+function get_total(lista_destinos,semestre){
   
   if (semestre=="total"){
-    for (i in destinos){
-      if (destinos[i]["Destino"]==0){
+    for (i in lista_destinos){
+      if (lista_destinos[i]["Destino"]==0){
         var temp = 0
         for (s in semestres)
-          temp=temp+destinos[i][semestres[s]]
+          temp=temp+lista_destinos[i][semestres[s]]
         return temp
       } 
     } 
   }
-  
-  
-  for (i in destinos){
-      if (destinos[i]["Destino"]==0)
-        return destinos[i][semestre]  
+  else {
+    for (i in lista_destinos){
+        if (lista_destinos[i]["Destino"]==0)
+          return lista_destinos[i][semestre]  
+    }
   }
-
 }
   
 function resize(){

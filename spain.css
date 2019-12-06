@@ -10,6 +10,13 @@
 h1,div {
   font-family: 'Glegoo-Regular',sans-serif;
 }
+
+p {
+  font-family: Tahoma, sans-serif;
+  font-weight: normal;
+  font-size: 15px;
+}
+
 path {
   fill: #ccc;
   stroke: #fff;
