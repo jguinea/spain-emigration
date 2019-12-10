@@ -36,10 +36,10 @@ nombres_provincias=[{
 	"nm": "Asturias"
 }, {
 	"id": "07",
-	"nm": "Balears, Illes"
+	"nm": "Illes Balears"
 }, {
 	"id": "35",
-	"nm": "Palmas, Las"
+	"nm": "Las Palmas"
 }, {
 	"id": "38",
 	"nm": "Santa Cruz de Tenerife"
@@ -117,7 +117,7 @@ nombres_provincias=[{
 	"nm": "Cáceres"
 }, {
 	"id": "15",
-	"nm": "Coruña, A"
+	"nm": "A Coruña"
 }, {
 	"id": "27",
 	"nm": "Lugo"
@@ -147,7 +147,7 @@ nombres_provincias=[{
 	"nm": "Gipuzkoa"
 }, {
 	"id": "26",
-	"nm": "Rioja, La"
+	"nm": "La Rioja"
 }, {
 	"id": "51",
 	"nm": "Ceuta"
