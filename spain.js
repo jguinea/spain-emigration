@@ -52,7 +52,7 @@ domain = get_domain(num_prov_selected,lista_destinos,semestre);
 //Escala de colores
 var myColor = d3.scaleLinear()
   .domain(domain)
-  .range(["blue","red"]);
+  .range(["#e6ffe6","#008000"]);
 
 
 //Dibujarlo todo
@@ -113,7 +113,7 @@ function update_map(num_prov_selected_new,lista_destinos_new,semestre_new){
 function draw_leyend(domain){
   var range_third = domain
   
-  var leyend_data = [{"color":"blue","value":range_third[0]},{"color":"red","value":range_third[1]}];
+  var leyend_data = [{"color":"#e6ffe6","value":range_third[0]},{"color":"#008000","value":range_third[1]}];
   var extent = d3.extent(leyend_data, d => d.value);
  
 

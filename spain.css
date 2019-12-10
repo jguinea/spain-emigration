@@ -19,8 +19,8 @@ p {
 
 path {
   fill: #ccc;
-  stroke: #fff;
-  stroke-width: .5px;
+  stroke: rgb(0, 0, 0);
+  stroke-width: .7px;
 }
     
 circle {
@@ -46,7 +46,7 @@ circle.active {
   top: 18%;
   z-index: -1;
 }
-.slider{
+#slider{
   position:absolute;
   left:1%;
   top:25%;
@@ -56,9 +56,10 @@ circle.active {
   left:1%;
   bottom:3%;
 }
-.select{
-    position:absolute;
-    left:20%;
-    top:5%;
+#select{
+  /* background-color: whitesmoke; */
+}
+body {
+  background-color: darkgray;
 }
   
