@@ -23,7 +23,7 @@ const semestres = ["2018S2","2018S1","2017S2","2017S1","2016S2","2016S1","2015S2
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
 var projection = d3.geoConicConformalSpain()
-  .translate([width / 2, height / 2]);
+  .translate([width / 3.5, height / 2]);
 // Añadir la proyección al path
 var path = d3.geoPath().projection(projection);
 
@@ -56,12 +56,26 @@ var myColor = d3.scaleLinear()
 
 
 //Dibujarlo todo
-draw_leyend(domain);
-draw_map(num_prov_selected,lista_destinos,semestre)
-button_listner()
+draft_map();
+//draw_map(num_prov_selected,lista_destinos,semestre);
+button_listner();
+
+//Mapa base
+function draft_map() {
+  svg.selectAll("path")
+    .data(provincias.features)
+    // features es la lista de provincias
+    .enter().append("path")
+    .attr("d", path)
+    .attr("class","map")
+    .style("fill", "white");
+}
 
 //Dibujar el mapa
 function draw_map(num_prov_selected,lista_destinos,semestre){
+  $(".map").remove();
+  draw_leyend(domain);
+
   name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
   total = get_total(lista_destinos,semestre)
   $("#where").text("Peña que huye de "+name_prov_selected+": "+total)
@@ -126,14 +140,16 @@ function draw_leyend(domain){
   var xAxis = d3.axisBottom(xScale)
       .tickSize(leyend_height * 2)
       .tickValues(xTicks);
-  var position=padding_leyend*10
-  var g = svg.append("g").attr("transform", "translate(" + padding_leyend + ","+position+")")
-        .attr("class","leyend");
+  var position=padding_leyend*17;
+  var g = svg.append("g")
+    .attr("id","leyend")
+    .attr("transform", "translate("+padding_leyend*17+","+position+")")
+    .attr("class","leyend");
 
   var defs = svg.append("defs");
   var linearGradient = defs.append("linearGradient").attr("id", "myGradient");
   linearGradient.selectAll("stop")
-      .data(leyend_data)
+    .data(leyend_data)
     .enter().append("stop")
       .attr("offset", d => ((d.value - extent[0]) / (extent[1] - extent[0]) * 100) + "%")
       .attr("stop-color", d => d.color);
