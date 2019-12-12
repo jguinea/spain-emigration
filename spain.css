@@ -7,6 +7,10 @@
        url('Glegoo/Glegoo-Regular.svg#Glegoo-Regular') format('svg');
 }
 
+body {
+  background-color: rgb(185, 185, 185);
+}
+
 h1,div {
   font-family: 'Glegoo-Regular',sans-serif;
 }
@@ -40,7 +44,7 @@ circle.active {
   left:1%;
   top: 0px;
 }
-#map{
+.map{
   position:absolute;
   left:1%;
   top: 18%;
@@ -59,7 +63,14 @@ circle.active {
 #select{
   /* background-color: whitesmoke; */
 }
-body {
-  background-color: darkgray;
+
+#buttons{
+  position: absolute;
+  left: 1%;
 }
-  
+
+#leyend{
+  position: absolute;
+  bottom: 0px;
+  right: 10px;
+} 
