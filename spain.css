@@ -11,7 +11,7 @@ body {
   background-color: rgb(185, 185, 185);
 }
 
-h1,div {
+h1,div, form {
   font-family: 'Glegoo-Regular',sans-serif;
 }
 
@@ -58,10 +58,7 @@ circle.active {
 #info{
   position:absolute;
   left:1%;
-  bottom:3%;
-}
-#select{
-  /* background-color: whitesmoke; */
+  bottom:2%;
 }
 
 #buttons{

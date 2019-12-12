@@ -10,11 +10,11 @@
     <p></p>
   </div> -->
   
-  <div id="select">
-    <input class="time_selection" type="radio" name="time" value="flujo" checked ="checked"> Flujo migratorio<br>
+  <form id="buttons">
+    <input class="time_selection" type="radio" name="time" value="flujo"> Migratory Flow<br>
+    <input class="time_selection" type="radio" name="time" value="saldo"> Net Migration<br>  
     <input class="time_selection" type="radio" name="time" value="urbanizacion"> Urbanización<br>  
-    <input class="time_selection" type="radio" name="time" value="saldo"> Saldo migratorio<br>  
-  </div>
+  </form>
  
   <div id="slider">
     <div class="col-sm-2"><p id="value-time"></p></div>
@@ -29,6 +29,7 @@
 <script src="data/geodata.js"></script>
 <script src="data/province_rurality.js"></script>
 <script src="data/nombres_provincias.js"></script>
+<script src="data/net_provinces_migrations.js"></script>
 <script src="//d3js.org/topojson.v1.js"></script>
 <script src="spain.js"></script>
 
