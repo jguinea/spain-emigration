@@ -1,6 +1,3 @@
-//TODO
-// Añadir interactividad del tiempo
-
 var viewWidth = window.innerWidth;
 var viewHeight = window.innerHeight;
 var test = d3.select("#test");
@@ -10,15 +7,16 @@ var width = viewWidth - margin.left - margin.right;
 var height = viewHeight - margin.top - margin.bottom;
 //test.select("p")
 //  .text("TEST--window height: " + height);
-var padding_leyend = height/20;
-//test.append("p").text("padding_leyend: "+padding_leyend);
-var leyend_height = height/70;
-var leyend_width = width/3 - (padding_leyend * 3);
-//test.append("p").text("leyend_width: "+leyend_width);
+var padding_legend = height/20;
+//test.append("p").text("padding_legend: "+padding_legend);
+var legend_height = height/70;
+var legend_width = width/3 - (padding_legend * 3);
+//test.append("p").text("legend_width: "+legend_width);
 //var padding = 15; not used??
 d3.select(window).on('resize', resize); //zoom
 
 const semestres = ["2018S2","2018S1","2017S2","2017S1","2016S2","2016S1","2015S2","2015S1","2014S2","2014S1","2013S2","2013S1","2012S2","2012S1","2011S2","2011S1","2010S2","2010S1","2009S2","2009S1","2008S2","2008S1"]
+const rural_code=["PU","PR","IN"]
 var type = "flujo"
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
@@ -51,15 +49,19 @@ var semestre= "total";
 domain = get_domain(num_prov_selected,lista_destinos,semestre);
 
 //Escala de colores
-var myColor = d3.scaleLinear()
+var linColor = d3.scaleLinear()
   .domain(domain)
   .range(["#e6ffe6","#008000"]);
-
+var catColors = d3.scaleOrdinal()
+  .domain(rural_code)
+  .range(d3.schemeCategory10);
 
 //Dibujarlo todo
 draft_map();
 //draw_map(num_prov_selected,lista_destinos,semestre);
 button_listner();
+uncheck();
+
 
 //Mapa base
 function draft_map() {
@@ -92,12 +94,7 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
         catch(error) {
           
         }
-        if(rural=="PU")
-          return "#780116"
-        if(rural=="PR")
-          return "#efde6a"
-        if(rural=="IN")
-          return "#e65634"
+        return catColors(rural)
       })
       .on("mouseover",function(d) {
         name_destino = d["properties"]["name"]
@@ -120,12 +117,7 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
           catch(error) {
             console.error(d["properties"]["cod_prov"]);
           }
-          if(rural=="PU")
-            return "#780116"
-          if(rural=="PR")
-            return "#efde6a"
-          if(rural=="IN")
-            return "#e65634"
+          return catColors(rural)
         })
       })
   }
@@ -171,55 +163,93 @@ function update_map(type,num_prov_selected_new,lista_destinos_new,semestre_new){
   lista_destinos=lista_destinos_new
   semestre=semestre_new
   domain = get_domain(num_prov_selected,lista_destinos,semestre)
-  myColor.domain(domain);
+  linColor.domain(domain);
   draw_map(type,num_prov_selected,lista_destinos,semestre)
-  $(".leyend").remove()
-   if(type=="flujo"){
-       draw_leyend(domain)
-  }
+  $(".legend").remove()
+  draw_legend(domain,type)
 }
 
 
-function draw_leyend(domain){
-  var range_third = domain
+function draw_legend(domain,type){
+  if (type=="flujo"){
+    var range_third = domain
   
-  var leyend_data = [{"color":"#e6ffe6","value":range_third[0]},{"color":"#008000","value":range_third[1]}];
-  var extent = d3.extent(leyend_data, d => d.value);
- 
+    var legend_data = [{"color":"#e6ffe6","value":range_third[0]},{"color":"#008000","value":range_third[1]}];
+    var extent = d3.extent(legend_data, d => d.value);
+   
+  
+    var xScale = d3.scaleLinear()
+        .range([0, legend_width])
+        .domain(extent);
+  
+    var xTicks = domain;
+  
+    var xAxis = d3.axisBottom(xScale)
+        .tickSize(legend_height * 2)
+        .tickValues(xTicks);
+    var position=padding_legend*17;
+    var g = svg.append("g")
+      .attr("id","legend")
+      .attr("transform", "translate("+padding_legend*17+","+position+")")
+      .attr("class","legend");
+  
+    var defs = svg.append("defs");
+    var linearGradient = defs.append("linearGradient").attr("id", "myGradient");
+    linearGradient.selectAll("stop")
+      .data(legend_data)
+      .enter().append("stop")
+        .attr("offset", d => ((d.value - extent[0]) / (extent[1] - extent[0]) * 100) + "%")
+        .attr("stop-color", d => d.color);
+  
+    g.append("rect")
+        .attr("width", legend_width)
+        .attr("height", legend_height)
+        .style("fill", "url(#myGradient)");
+  
+    g.append("g")
+      .attr("class", "z axis")
+      .call(xAxis)
+      .select(".domain").remove();
+    return xAxis;
+  }
+  if (type == "urbanizacion"){
+    function get_legend_string(code){
+      switch(code){
+        case "PU":
+          return "Urban Area"
+        case "RU":
+          return "Rural Area"
+        case "IN":
+          return "Intermediate Area"
+      }
+    }
+    var size=legend_height*3
+    var g = svg.append("g")
+      .attr("id","legend")
+      .attr("class","legend");
 
-  var xScale = d3.scaleLinear()
-      .range([0, leyend_width])
-      .domain(extent);
+    g.selectAll("mydots")
+      .data(rural_code)
+      .enter()
+      .append("rect")
+      .attr("x", 100)
+      .attr("y", function(d,i){ return 100 + i*(size+5)}) 
+      .attr("width", size)
+      .attr("height", size)
+      .style("fill", function(d){ return catColors(d)})
 
-  var xTicks = domain;
+    g.selectAll("mylabels")
+      .data(rural_code)
+      .enter()
+      .append("text")
+      .attr("x", 100 + size*1.2)
+      .attr("y", function(d,i){ return 100 + i*(size+5) + (size/2)}) 
+      .style("fill", function(d){ return catColors(d)})
+      .text(function(d){ return d})
+      .attr("text-anchor", "left")
+      .style("alignment-baseline", "middle");
 
-  var xAxis = d3.axisBottom(xScale)
-      .tickSize(leyend_height * 2)
-      .tickValues(xTicks);
-  var position=padding_leyend*17;
-  var g = svg.append("g")
-    .attr("id","leyend")
-    .attr("transform", "translate("+padding_leyend*17+","+position+")")
-    .attr("class","leyend");
-
-  var defs = svg.append("defs");
-  var linearGradient = defs.append("linearGradient").attr("id", "myGradient");
-  linearGradient.selectAll("stop")
-    .data(leyend_data)
-    .enter().append("stop")
-      .attr("offset", d => ((d.value - extent[0]) / (extent[1] - extent[0]) * 100) + "%")
-      .attr("stop-color", d => d.color);
-
-  g.append("rect")
-      .attr("width", leyend_width)
-      .attr("height", leyend_height)
-      .style("fill", "url(#myGradient)");
-
-  g.append("g")
-    .attr("class", "z axis")
-    .call(xAxis)
-    .select(".domain").remove();
-  return xAxis;
+  }
 }
 
 
@@ -239,7 +269,7 @@ function getColor(provincia_destino, provincia_origen,semestre){
       //colorea la provincia seleccionada distinto
 
     value = getNumEmmigrants(provincia_destino,lista_destinos,semestre)
-    return myColor(value)
+    return linColor(value)
  }
 
 //Carga la lista de destinos a partir de la provincia de procedencia
@@ -332,15 +362,13 @@ function resize(){
 
   viewWidth = $(window).innerWidth();
   viewHeight = $(window).innerHeight();
-
   width = viewWidth - margin.left - margin.right;
   height = viewHeight - margin.top - margin.bottom;
-  padding_leyend = height/20;
-  leyend_height = height/100;
-  leyend_width = width/3 - (padding_leyend * 2);
-  $(".leyend").remove()
-  if (type == "flujo")
-    draw_leyend(domain)
+  padding_legend = height/20;
+  legend_height = height/100;
+  legend_width = width/3 - (padding_legend * 2);
+  $(".legend").remove()
+  draw_legend(domain,type)
   scale = height/0.2  ;
   projection.scale(scale)
   .translate([width / 2, height / 2]);
@@ -348,6 +376,14 @@ function resize(){
   .attr("height", height)  
   d3.selectAll("path").attr('d', path);
    
+}
+
+function uncheck(){
+  var checkboxes = $(".time_selection");
+  console.log(checkboxes.length)
+  for (var i=0; i<checkboxes.length; i++)  {
+    checkboxes[i].checked = false;
+  }
 }
 
 
