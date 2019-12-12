@@ -10,7 +10,7 @@ var height = viewHeight - margin.top - margin.bottom;
 var padding_legend = height/20;
 //test.append("p").text("padding_legend: "+padding_legend);
 var legend_height = height/70;
-var legend_width = width/3 - (padding_legend * 3);
+var legend_width = width/4 - (padding_legend * 2);
 //test.append("p").text("legend_width: "+legend_width);
 //var padding = 15; not used??
 d3.select(window).on('resize', resize); //zoom
@@ -56,6 +56,11 @@ var catColors = d3.scaleOrdinal()
   .domain(rural_code)
   .range(d3.schemeCategory10);
 
+extent_net = d3.extent(net_provinces, d => d.net_migration)
+var scaleColor = d3.scaleLinear()
+.domain([extent_net[0], 0, extent_net[1]])
+.range(["blue", "white", "red"]);
+
 //Dibujarlo todo
 draft_map();
 //draw_map(num_prov_selected,lista_destinos,semestre);
@@ -79,6 +84,9 @@ function draft_map() {
 function draw_map(type,num_prov_selected,lista_destinos,semestre){
 
   if(type=="urbanizacion"){
+    $("#where").text("");
+    $("#who").text("");
+    
     name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
     total = get_total(lista_destinos,semestre)
     svg.selectAll("type")
@@ -97,16 +105,28 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
         return catColors(rural)
       })
       .on("mouseover",function(d) {
-        name_destino = d["properties"]["name"]
-        try {
+        num_prov_selected = d["properties"]["cod_prov"];
+        name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
+         try {
           var rural=rurality.find(element => element["codigo"]==parseInt(d["properties"]["cod_prov"]))["ruralidad"]
         }
         catch(error) {
           console.error(d["properties"]["cod_prov"]);
         }
+        switch (rural) {
+          case "PU": 
+            rural_text = "primarily urban";
+            break;
+          case "PR": 
+            rural_text = "primarily rural";
+            break;
+          case "IN": 
+            rural_text = "intermidiate";
+            break;
+        }
         d3.select(this)
-          .style("fill","#222831")
-          $("#who").text(name_prov_selected +" es " + rural)
+          .style("fill","#222831");
+        $("#who").text(name_prov_selected +" is " + rural_text + ".");
       })
       .on("mouseout",function(d){
         d3.select(this)
@@ -121,7 +141,9 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
         })
       })
   }
+
   if(type=="flujo"){
+    $("#who").text("");
     name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
     total = get_total(lista_destinos,semestre)
     $("#where").text("Peña que huye de "+name_prov_selected+": "+total)
@@ -133,7 +155,7 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
       .attr("d", path)
       .attr("class","map")
       .style("fill",function(d){
-        return getColor(d["properties"]["cod_prov"],num_prov_selected,semestre);
+        return getColorFlow(d["properties"]["cod_prov"],num_prov_selected,semestre);      
       })
       .on("mouseover",function(d) {
         name_destino = d["properties"]["name"]
@@ -145,7 +167,7 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
       .on("mouseout",function(d){
         d3.select(this)
         .style("fill",function(d){
-          return getColor(d["properties"]["cod_prov"],num_prov_selected,semestre);
+          return getColorFlow(d["properties"]["cod_prov"],num_prov_selected,semestre);
         })
       })
       .on("click",function(d){
@@ -154,6 +176,52 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
       })
   }
   
+  if(type=="saldo") {
+    $("#where").text("");
+    $("#who").text("");
+    name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
+
+    svg.selectAll("path")
+      .data(provincias.features)
+      // features es la lista de provincias
+      .enter().append("path")
+      .attr("d", path)
+      .attr("class","map")
+      .style("fill", function(d) {
+        num_prov= d["properties"]["cod_prov"];
+        try {
+          value = net_provinces.find(obj => obj.id == num_prov)["net_migration"];
+        } catch (error) {
+          
+        }
+        return scaleColor(value);
+      })
+      .on("mouseover",function(d) {
+        try {
+          num_prov= d["properties"]["cod_prov"];
+          name_province= d["properties"]["name"];
+          value = net_provinces.find(obj => obj.id == num_prov)["net_migration"];
+        } catch (error) {
+          
+        }
+        d3.select(this)
+          .style("fill","#222831")
+          $("#who").text("Saldo "+name_province+" = "+value)
+      })
+      .on("mouseout",function(d){
+        d3.select(this)
+        .style("fill",function(d){num_prov= d["properties"]["cod_prov"];
+        try {
+          value = net_provinces.find(obj => obj.id == num_prov)["net_migration"];
+        } catch (error) {
+          
+        }
+        return scaleColor(value);
+      })
+      }); 
+
+  }
+
 }
 
 
@@ -263,7 +331,7 @@ function button_listner(){
 
 
 //Busca en la lista de colores el color correspondiente al código de provincia
-function getColor(provincia_destino, provincia_origen,semestre){
+function getColorFlow(provincia_destino, provincia_origen,semestre){
     if (provincia_destino == provincia_origen)
       return "#CCC"
       //colorea la provincia seleccionada distinto
@@ -377,7 +445,6 @@ function resize(){
   d3.selectAll("path").attr('d', path);
    
 }
-
 function uncheck(){
   var checkboxes = $(".time_selection");
   console.log(checkboxes.length)
