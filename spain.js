@@ -12,10 +12,12 @@ var splom_size = height/4
 var splom_padding = height/20
 d3.select(window).on('resize', resize); //zoom
 
+
 const semestres = ["2018S2","2018S1","2017S2","2017S1","2016S2","2016S1","2015S2","2015S1","2014S2","2014S1","2013S2","2013S1","2012S2","2012S1","2011S2","2011S1","2010S2","2010S1","2009S2","2009S1","2008S2","2008S1"]
 const rural_code=["PU","PR","IN"]
-var type = "net"
+var type = "white"
 var selected_provinces = []
+var columns =["Agrario","Paro","PIB","PresupuestosNorm"]
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
 var projection = d3.geoConicConformalSpain()
@@ -180,8 +182,9 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
       })
       .on("click",function(d){
         lista_destinos_new=get_destinos(d["properties"]["cod_prov"],data)
-        update_splom(type,splom_size,splom_padding)
         update_map(type,d["properties"]["cod_prov"],lista_destinos_new,semestre)
+        update_splom(type,splom_size,splom_padding)
+
       })
   }
   
@@ -344,10 +347,20 @@ function getColorFlow(provincia_destino, provincia_origen,semestre){
 }
 
 function button_listner(){
-  const buttons = d3.selectAll('.time_selection');
-  buttons.on('change', function(d) {
+  const buttons_map = d3.selectAll('.time_selection');
+  buttons_map.on('change', function(d) {
     type = this.value
     update_map(type,num_prov_selected,lista_destinos,"total")
+    update_splom(type,splom_size,splom_padding)
+  })
+  const buttons_splom = d3.selectAll('.splom_selection');
+  buttons_splom.on('change', function(d) {
+    console.log(typeof this.value)
+    if(this.value=="true")
+      columns =["Agrario","Paro","PIB",num_prov_selected]
+    else
+      columns =["Agrario","Paro","PIB","PresupuestosNorm"]
+
     update_splom(type,splom_size,splom_padding)
   })
 }
@@ -465,7 +478,7 @@ function resize(){
 
 
 function uncheck(){
-  var checkboxes = $(".time_selection");
+  var checkboxes = $(".selection");
   console.log(checkboxes.length)
   for (var i=0; i<checkboxes.length; i++)  {
     checkboxes[i].checked = false;
@@ -475,12 +488,7 @@ function uncheck(){
 
 function draw_splom(type,size, padding){
 
-
-
-
   var data=splom_data
-
-  var columns = ["Agrario","Paro","PIB","PresupuestosNorm"]
 
   var svg = d3.select("body")
               .append("svg")
@@ -585,7 +593,22 @@ function draw_splom(type,size, padding){
       .attr("x",padding)
       .attr("y",padding)
       .attr("dy",".71em")
-      .text(d => d);
+      .text(function(d){
+        switch(d){
+          case "Agrario":
+            return "Agriculture workers (%)"
+          case "Paro":
+            return "Unemployment rate (%)"
+          case "PIB":
+            return "GDP per capita (€)"
+          case "PresupuestosNorm":
+            return "Investment p.c. (€)"
+        }
+        for (province in nombres_provincias){
+          if (nombres_provincias[province]["id"]==d)
+            return "People leaving "+nombres_provincias[province]["nm"]
+        }
+      });
 
       
   var brush = d3.brush()
@@ -639,7 +662,9 @@ function draw_splom(type,size, padding){
       var value = net_provinces.find(obj => obj.id == d["Codigo"])["net_migration"];
       return scaleColor(value)
     }
-    return catColors(d.Ruralidad)
+    if (type == "urbanizacion")
+      return catColors(d.Ruralidad)
+    return "white"
   }
 }
 

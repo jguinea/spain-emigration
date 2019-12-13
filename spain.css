@@ -13,6 +13,7 @@ body {
 
 h1,div, form {
   font-family: 'Glegoo-Regular',sans-serif;
+  text-align: center;
 }
 
 p {
@@ -68,4 +69,12 @@ path.active {
 .splom {
   position: absolute;
 right: 3%;
+}
+
+#sploming {
+  position: absolute;
+
+right: 114px;
+
+top: 25px;
 }
