@@ -17,7 +17,7 @@ const semestres = ["2018S2","2018S1","2017S2","2017S1","2016S2","2016S1","2015S2
 const rural_code=["PU","PR","IN"]
 var type = "white"
 var selected_provinces = []
-var columns =["Agrario","Paro","PIB","PresupuestosNorm"]
+var migration_flow = false
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
 var projection = d3.geoConicConformalSpain()
@@ -82,13 +82,13 @@ function draft_map() {
 }
 
 
-function draw_map(type,num_prov_selected,lista_destinos,semestre){
+function draw_map(type,prov_sel,lista_destinos,semestre){
 
   if(type=="urbanizacion"){
     $("#where").text("");
     $("#who").text("");
     
-    name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
+    name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
     total = get_total(lista_destinos,semestre)
     svg.selectAll("type")
       .data(provincias.features)
@@ -108,9 +108,13 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
         }
         return "white"
       })
+      .on("click",function(d){
+        num_prov_selected=d["properties"]["cod_prov"]
+        update_splom(type,splom_size,splom_padding)
+      })
       .on("mouseover",function(d) {
         num_prov_selected = d["properties"]["cod_prov"];
-        name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
+        name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
          try {
           var rural=rurality.find(element => element["codigo"]==parseInt(d["properties"]["cod_prov"]))["ruralidad"]
         }
@@ -150,7 +154,7 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
 
   if(type=="flow"){
     $("#who").text("");
-    name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
+    name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
     total = get_total(lista_destinos,semestre)
     $("#where").text("Peña que huye de "+name_prov_selected+": "+total)
     
@@ -162,7 +166,7 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
       .attr("class","map")
       .style("fill",function(d){
         if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
-          return getColorFlow(d["properties"]["cod_prov"],num_prov_selected,semestre);
+          return getColorFlow(d["properties"]["cod_prov"],prov_sel,semestre);
         return "white"    
       })
       .on("mouseover",function(d) {
@@ -176,7 +180,7 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
         d3.select(this)
         .style("fill",function(d){
           if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
-            return getColorFlow(d["properties"]["cod_prov"],num_prov_selected,semestre);
+            return getColorFlow(d["properties"]["cod_prov"],prov_sel,semestre);
           return "white"
         })
       })
@@ -191,7 +195,7 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
   if(type=="net") {
     $("#where").text("");
     $("#who").text("");
-    name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
+    name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
 
     svg.selectAll("path")
       .data(provincias.features)
@@ -232,6 +236,10 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
           return scaleColor(value);
         return "white"
       })
+      })
+      .on("click",function(d){
+        num_prov_selected=d["properties"]["cod_prov"]
+        update_splom(type,splom_size,splom_padding)
       }); 
 
   }
@@ -357,10 +365,9 @@ function button_listner(){
   buttons_splom.on('change', function(d) {
     console.log(typeof this.value)
     if(this.value=="true")
-      columns =["Agrario","Paro","PIB",num_prov_selected]
+      migration_flow=true
     else
-      columns =["Agrario","Paro","PIB","PresupuestosNorm"]
-
+      migration_flow=false
     update_splom(type,splom_size,splom_padding)
   })
 }
@@ -487,6 +494,15 @@ function uncheck(){
 
 
 function draw_splom(type,size, padding){
+
+  
+  var num_str = (num_prov_selected>9) ? parseInt(num_prov_selected) : num_prov_selected
+
+
+  var columns_budget =["Agrario","Paro","PIB","PresupuestosNorm"]
+  var columns_flow =["Agrario","Paro","PIB",num_str]
+  columns = (migration_flow) ? columns_flow : columns_budget
+  console.log(num_prov_selected,columns)
 
   var data=splom_data
 
