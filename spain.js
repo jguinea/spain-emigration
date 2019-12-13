@@ -5,19 +5,15 @@ var test = d3.select("#test");
 var margin = {top: 60, right: 20, bottom: 60, left: 40};
 var width = viewWidth - margin.left - margin.right;
 var height = viewHeight - margin.top - margin.bottom;
-//test.select("p")
-//  .text("TEST--window height: " + height);
 var padding_legend = height/20;
-//test.append("p").text("padding_legend: "+padding_legend);
 var legend_height = height/70;
 var legend_width = width/4 - (padding_legend * 2);
-//test.append("p").text("legend_width: "+legend_width);
-//var padding = 15; not used??
 d3.select(window).on('resize', resize); //zoom
 
 const semestres = ["2018S2","2018S1","2017S2","2017S1","2016S2","2016S1","2015S2","2015S1","2014S2","2014S1","2013S2","2013S1","2012S2","2012S1","2011S2","2011S1","2010S2","2010S1","2009S2","2009S1","2008S2","2008S1"]
 const rural_code=["PU","PR","IN"]
-var type = "flujo"
+var type = "blanco"
+var selected_provinces = []
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
 var projection = d3.geoConicConformalSpain()
@@ -34,7 +30,7 @@ var svg = d3.select("body").append("svg")
   .attr("width", width)
   .attr("height", height)
   .attr("id","map");
-
+ 
 //Guardar info de geometría
 provincias = geodata
 
@@ -48,7 +44,7 @@ var lista_destinos = get_destinos(num_prov_selected,data);
 var semestre= "total";
 domain = get_domain(num_prov_selected,lista_destinos,semestre);
 
-//Escala de colores
+//Escalas de colores
 var linColor = d3.scaleLinear()
   .domain(domain)
   .range(["#e6ffe6","#008000"]);
@@ -63,8 +59,8 @@ var scaleColor = d3.scaleLinear()
 
 //Dibujarlo todo
 draft_map();
-//draw_map(num_prov_selected,lista_destinos,semestre);
 button_listner();
+draw_splom(160,20)
 uncheck();
 
 
@@ -78,7 +74,6 @@ function draft_map() {
     .attr("class","map")
     .style("fill", "white");
 }
-
 
 //Dibujar el mapa
 function draw_map(type,num_prov_selected,lista_destinos,semestre){
@@ -102,7 +97,9 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
         catch(error) {
           
         }
-        return catColors(rural)
+        if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
+          return catColors(rural)
+        return "white"
       })
       .on("mouseover",function(d) {
         num_prov_selected = d["properties"]["cod_prov"];
@@ -137,7 +134,9 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
           catch(error) {
             console.error(d["properties"]["cod_prov"]);
           }
-          return catColors(rural)
+          if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
+            return catColors(rural)
+          return "white"
         })
       })
   }
@@ -155,7 +154,9 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
       .attr("d", path)
       .attr("class","map")
       .style("fill",function(d){
-        return getColorFlow(d["properties"]["cod_prov"],num_prov_selected,semestre);      
+        if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
+          return getColorFlow(d["properties"]["cod_prov"],num_prov_selected,semestre);
+        return "white"    
       })
       .on("mouseover",function(d) {
         name_destino = d["properties"]["name"]
@@ -167,7 +168,9 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
       .on("mouseout",function(d){
         d3.select(this)
         .style("fill",function(d){
-          return getColorFlow(d["properties"]["cod_prov"],num_prov_selected,semestre);
+          if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
+            return getColorFlow(d["properties"]["cod_prov"],num_prov_selected,semestre);
+          return "white"
         })
       })
       .on("click",function(d){
@@ -216,7 +219,9 @@ function draw_map(type,num_prov_selected,lista_destinos,semestre){
         } catch (error) {
           
         }
-        return scaleColor(value);
+        if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
+          return scaleColor(value);
+        return "white"
       })
       }); 
 
@@ -285,7 +290,7 @@ function draw_legend(domain,type){
       switch(code){
         case "PU":
           return "Urban Area"
-        case "RU":
+        case "PR":
           return "Rural Area"
         case "IN":
           return "Intermediate Area"
@@ -313,7 +318,7 @@ function draw_legend(domain,type){
       .attr("x", 100 + size*1.2)
       .attr("y", function(d,i){ return 100 + i*(size+5) + (size/2)}) 
       .style("fill", function(d){ return catColors(d)})
-      .text(function(d){ return d})
+      .text(function(d){ return get_legend_string(d)})
       .attr("text-anchor", "left")
       .style("alignment-baseline", "middle");
 
@@ -328,7 +333,6 @@ function button_listner(){
     update_map(type,num_prov_selected,lista_destinos,"total")
   })
 }
-
 
 //Busca en la lista de colores el color correspondiente al código de provincia
 function getColorFlow(provincia_destino, provincia_origen,semestre){
@@ -425,7 +429,6 @@ function get_total(lista_destinos,semestre){
     }
   }
 }
-  
 function resize(){
 
   viewWidth = $(window).innerWidth();
@@ -433,18 +436,19 @@ function resize(){
   width = viewWidth - margin.left - margin.right;
   height = viewHeight - margin.top - margin.bottom;
   padding_legend = height/20;
-  legend_height = height/100;
-  legend_width = width/3 - (padding_legend * 2);
+  legend_height = height/70;
+  legend_width = width/4 - (padding_legend * 2);
   $(".legend").remove()
   draw_legend(domain,type)
   scale = height/0.2  ;
   projection.scale(scale)
-  .translate([width / 2, height / 2]);
+  .translate([width / 3.5, height / 2]);
   svg.attr("width", width)
   .attr("height", height)  
   d3.selectAll("path").attr('d', path);
    
 }
+
 function uncheck(){
   var checkboxes = $(".time_selection");
   console.log(checkboxes.length)
@@ -454,3 +458,164 @@ function uncheck(){
 }
 
 
+function draw_splom(size, padding){
+
+  var data=splom_data
+
+  var columns = ["Agrario","Paro","PIB","PresupuestosNorm"]
+
+  var svg = d3.select("body")
+              .append("svg")
+              .attr("class","splom")
+              .attr("width",size*columns.length+padding)
+              .attr("height",size*columns.length+padding)
+              .append("g")
+              .attr("transform","translate("+padding+",0)");
+
+  var xScale = columns.map(c => d3.scaleLinear()
+                                  .domain(d3.extent(data,
+                                  function(d){
+                                      return d[c]
+                                  }))
+                                  .range([padding/2,size-padding/2]));
+
+
+                                  
+  var yScale = columns.map(c => d3.scaleLinear()
+                      .domain(d3.extent(data,d => d[c]))
+                      .range([size-padding/2,padding/2]));
+
+                      
+  var xAxis = d3.axisBottom()
+                  .ticks(6)
+                  .tickSize(size*columns.length);
+
+  var x = svg.append("g")
+              .selectAll("g")
+              .data(xScale)
+              .enter()
+              .append("g")
+              .attr("transform",(d,i) => "translate("+size*i+",0)")
+              .each(function(d){
+                  return d3.select(this).call(xAxis.scale(d));
+              });
+
+  x.select(".domain").remove();
+  x.selectAll(".tick line").attr("stroke","#ddd");
+
+  var yAxis = d3.axisLeft()
+                  .ticks(6)
+                  .tickSize(-size*columns.length);
+
+  var y = svg.append("g")
+              .selectAll("g")
+              .data(yScale)
+              .enter()
+              .append("g")
+              .attr("transform",(d,i) => "translate(0,"+size*i+")")
+              .each(function(d){
+                  return d3.select(this).call(yAxis.scale(d));
+              });
+              
+  y.select(".domain").remove();
+  y.selectAll(".tick line").attr("stroke","#ddd");
+
+
+                  
+  var cell = svg.append("g")
+                  .selectAll("g")
+                  .data(d3.cross(d3.range(columns.length),d3.range(columns.length)))
+                  .enter()
+                  .append("g")
+                  .attr("transform",([i,j]) => "translate("+i*size+","+j*size+")");
+                  
+                  
+
+                  
+  cell.append("rect")
+      .attr("fill","none")
+      .attr("stroke","#aaa")
+      .attr("x",padding/2)
+      .attr("y",padding/2)
+      .attr("width",size-padding)
+      .attr("height",size-padding);
+
+      
+  cell.each(function([i,j]){
+      d3.select(this)
+          .selectAll("circle")
+          .data(data)
+          .enter()
+          .append("circle")
+          .attr("cx",d => xScale[i](d[columns[i]]))
+          .attr("cy",d => yScale[j](d[columns[j]]))
+          .attr("r",3.5)
+          .attr("fill-opacity",0.7)
+          .attr("fill",d => catColors(d.Ruralidad));
+  });
+
+  var circle = cell.selectAll("circle");
+
+
+  svg.append("g")
+      .style("font","bold 10px sans-serif")
+      .selectAll("text")
+      .data(columns)
+      .enter()
+      .append("text")
+      .attr("transform",(d,i) => "translate("+i*size+","+i*size+")")
+      .attr("x",padding)
+      .attr("y",padding)
+      .attr("dy",".71em")
+      .text(d => d);
+
+      
+  var brush = d3.brush()
+                  .extent([[padding/2,padding/2],[size-padding/2,size-padding/2]]);
+
+  cell.call(brush);
+      
+  var brushCell;
+  var sprovinces=[]
+
+  brush.on("start",function(){
+      selected_provinces = []
+      if(brushCell != this){
+          d3.select(brushCell).call(brush.move,null);
+          brushCell = this;
+      }
+  });
+
+  brush.on("brush",function([i,j]){
+      if(d3.event.selection == null)
+          return;
+      const [[x0,y0],[x1,y1]] = d3.event.selection;
+      circle.attr("fill",function(d){
+          if(xScale[i](d[columns[i]])<x0
+              || xScale[i](d[columns[i]])>x1
+              || yScale[j](d[columns[j]])<y0
+              || yScale[j](d[columns[j]])>y1){
+                  return "#ccc"
+          }
+          if(sprovinces.indexOf(d["Codigo"]) === -1){
+            sprovinces.push(d["Codigo"])
+            selection_listner(sprovinces)
+          }
+          return catColors(d.Ruralidad);
+      });
+  });
+
+
+  brush.on("end",function(){
+      if(d3.event.selection != null)
+          return;
+          
+      circle.attr("fill",d => catColors(d.Ruralidad));
+  });
+
+}
+
+
+function selection_listner(sprovinces){
+  selected_provinces=sprovinces
+}

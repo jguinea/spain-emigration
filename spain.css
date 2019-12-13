@@ -26,19 +26,12 @@ path {
   stroke: rgb(0, 0, 0);
   stroke-width: .7px;
 }
-    
-circle {
-  fill: #fff;
-  fill-opacity: 0.4;
-  stroke: #111;
-}
+
   
 path.active {
   fill: pink;
 }
-circle.active {
-  fill: blue;
-}
+
 .title {
   position:absolute;
   left:1%;
@@ -71,3 +64,8 @@ circle.active {
   bottom: 0px;
   right: 10px;
 } 
+
+.splom {
+  position: absolute;
+right: 3%;
+}
