@@ -1,5 +1,4 @@
 //TODO
-//Leyend net
 //Rotate ticks
 //Beautify
 //Set rules for select
@@ -50,7 +49,6 @@ provincias = geodata
 
 //JSON importado en el html 
 var data = emigration_data
-var ruality = rurality
 
 //Datos para Madrid (estático)
 var num_prov_selected = 28;
@@ -70,19 +68,17 @@ var catColors = d3.scaleOrdinal()
 
 extent_net = d3.extent(net_provinces, d => d.net_migration)
 var scaleColor = d3.scaleLinear()
-.domain([extent_net[0], 0, extent_net[1]])
-.range(["blue", "white", "red"]);
+  .domain([extent_net[0], 0, extent_net[1]])
+  .range(["blue", "white", "red"]);
 
 //Dibujarlo todo
 draw_map(type,num_prov_selected,lista_destinos,semestre);
 button_listner();
-draw_splom(type,splom_size,splom_padding)
+draw_splom(type,splom_size,splom_padding);
 uncheck();
 
 
 //MAPS
-
-
 
 function draw_map(type,prov_sel,lista_destinos,semestre){
   if (type=="white"){
@@ -94,11 +90,11 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
     .attr("class","map")
     .style("fill", "white");
   }
+
   if(type=="urbanizacion"){
     $("#where").text("");
     $("#who").text("");
-    
-    name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
+
     total = get_total(lista_destinos,semestre)
     svg.selectAll("type")
       .data(provincias.features)
@@ -125,7 +121,7 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
       })
       .on("mouseover",function(d) {
         num_prov_selected = d["properties"]["cod_prov"];
-        name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
+        name_prov_selected = nombres_provincias.find(obj => obj.id == num_prov_selected)["nm"];
          try {
           var rural=rurality.find(element => element["codigo"]==parseInt(d["properties"]["cod_prov"]))["ruralidad"]
         }
@@ -168,7 +164,7 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
     $("#who").text("");
     name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
     total = get_total(lista_destinos,semestre)
-    $("#where").text("Peña que huye de "+name_prov_selected+": "+total)
+    $("#where").text("People from " +name_prov_selected+" moving away: "+total)
     
     svg.selectAll("path")
       .data(provincias.features)
@@ -187,7 +183,7 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
         numEmmigrants = getNumEmmigrants(d["properties"]["cod_prov"],lista_destinos,semestre)
         d3.select(this)
           .style("fill","#222831")
-          $("#who").text("Peña de "+name_prov_selected+" a "+name_destino+": "+numEmmigrants)
+          $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmmigrants)
       })
       .on("mouseout",function(d){
         d3.select(this)
@@ -272,8 +268,9 @@ function update_map(type,num_prov_selected_new,lista_destinos_new,semestre_new){
   semestre=semestre_new
   domain = get_domain(num_prov_selected,lista_destinos,semestre)
   linColor.domain(domain);
-  draw_map(type,num_prov_selected,lista_destinos,semestre)
-  $(".legend").remove()
+  draw_map(type,num_prov_selected,lista_destinos,semestre);
+  $(".legend").remove(); 
+  $("#myGradient").remove();
   draw_legend(domain,type)
 }
 
@@ -405,13 +402,12 @@ function selection_listner(sprovinces){
 }
 
 function draw_legend(domain,type){
-  if (type=="flow"){
-    var range_third = domain
+  if (type=="flow") {
+    var range_third = domain;
   
     var legend_data = [{"color":"#e6ffe6","value":range_third[0]},{"color":"#008000","value":range_third[1]}];
     var extent = d3.extent(legend_data, d => d.value);
    
-  
     var xScale = d3.scaleLinear()
         .range([0, legend_width])
         .domain(extent);
@@ -422,13 +418,12 @@ function draw_legend(domain,type){
         .tickSize(legend_height * 2)
         .tickValues(xTicks);
     var position=padding_legend*17;
-    var g = svg.append("g")
-      .attr("id","legend")
+    var g = svg.append("g") 
       .attr("transform", "translate("+padding_legend*17+","+position+")")
       .attr("class","legend");
   
-    var defs = svg.append("defs");
-    var linearGradient = defs.append("linearGradient").attr("id", "myGradient");
+    //var defs = svg.append("defs");
+    var linearGradient = svg.append("linearGradient").attr("id", "myGradient");
     linearGradient.selectAll("stop")
       .data(legend_data)
       .enter().append("stop")
@@ -446,6 +441,7 @@ function draw_legend(domain,type){
       .select(".domain").remove();
     return xAxis;
   }
+
   if (type == "urbanizacion"){
     function get_legend_string(code){
       switch(code){
@@ -484,6 +480,46 @@ function draw_legend(domain,type){
       .style("alignment-baseline", "middle");
 
   }
+
+  if (type == "net"){
+    var range_third = scaleColor.domain();
+  
+    var legend_data = [{"color":"blue","value":range_third[0]},{"color":"white","value":range_third[1]},{"color":"red","value":range_third[2]}];
+    var extent = d3.extent(legend_data, d => d.value);
+
+    var xScale = d3.scaleLinear()
+        .range([0, legend_width])
+        .domain(extent);
+  
+    var xTicks = scaleColor.domain();
+  
+    var xAxis = d3.axisBottom(xScale)
+        .tickSize(legend_height * 2)
+        .tickValues(xTicks);
+    var position=padding_legend*17;
+    var g = svg.append("g")
+      .attr("transform", "translate("+padding_legend*17+","+position+")")
+      .attr("class","legend");
+  
+    //var defs = svg.append("defs");
+    var linearGradient = svg.append("linearGradient").attr("id", "myGradient");
+    linearGradient.selectAll("stop")
+      .data(legend_data)
+      .enter().append("stop")
+        .attr("offset", d => ((d.value - extent[0]) / (extent[1] - extent[0]) * 100) + "%")
+        .attr("stop-color", d => d.color);
+  
+    g.append("rect")
+        .attr("width", legend_width)
+        .attr("height", legend_height)
+        .style("fill", "url(#myGradient)");
+  
+    g.append("g")
+      .attr("class", "z axis")
+      .call(xAxis)
+      .select(".domain").remove();
+    return xAxis;
+  } 
 }
 
 

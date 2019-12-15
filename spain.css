@@ -11,7 +11,7 @@ body {
   background-color: rgb(185, 185, 185);
 }
 
-h1,div, form {
+h1,div,form {
   font-family: 'Glegoo-Regular',sans-serif;
   text-align: center;
 }
@@ -60,14 +60,8 @@ path.active {
   left: 1%;
 }
 
-#leyend{
-  position: absolute;
-  bottom: 0px;
-  right: 10px;
-} 
-
 .splom {
-  position: absolute;
+position: absolute;
 right: 3%;
 }
 
