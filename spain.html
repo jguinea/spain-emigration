@@ -15,11 +15,74 @@
     <input class="time_selection selection" type="radio" name="time" value="net"> Net Migration<br>  
     <input class="time_selection selection" type="radio" name="time" value="urbanizacion"> Urbanization<br>  
   </form>
-  <form id="sploming">
-    <input class="splom_selection selection" type="radio" name="time" value="false">Public Investment Per Capita<br>
-    <input class="splom_selection selection" type="radio" name="time" value="true"> Migration Flow<br>
-  </form>
- 
+  <div id="splomselect">
+    <select id="0splom" class="splom_select">
+      <option value="PresupuestosTot">Public spending</option>
+      <option value="PresupuestosNorm">Public spending per capita</option>
+      <option value="Agrario">Agriculture % of workforce</option>
+      <option value="Paro">Unemployment</option>
+      <option value="Poblacion">Population</option>
+      <option value="PIB">GDP per capita</option>
+      <option value="Flow">Emigration flow from selected province</option>
+      <option value="net">Net migration</option>
+      <option value="Doctores18">Number of doctors per 10000 people</option>
+      <option value="quiebras">Banckrupcies</option>
+      <option value="quiebraspc">Banckrupcies normalized</option>
+      <option value="imd">R&D businesses</option>
+      <option value="imdnorm">R&D businesses normalized</option>
+      <option value="natalidad">Birth rate</option>
+    </select>
+    <select id="1splom" class="splom_select">
+      <option value="PresupuestosTot">Public spending</option>
+      <option value="PresupuestosNorm">Public spending per capita</option>
+      <option value="Agrario">Agriculture % of workforce</option>
+      <option value="Paro">Unemployment</option>
+      <option value="Poblacion">Population</option>
+      <option value="PIB">GDP</option>
+      <option value="Flow">Emigration flow from selected province</option>
+      <option value="net">Net migration</option>
+      <option value="Doctores18">Number of doctors per 10000 people</option>
+      <option value="quiebras">Banckrupcies</option>
+      <option value="quiebraspc">Banckrupcies normalized</option>
+      <option value="imd">R&D businesses</option>
+      <option value="imdnorm">R&D businesses normalized</option>
+      <option value="natalidad">Birth rate</option>
+    </select>
+    <select id="2splom" class="splom_select">
+      <option value="PresupuestosTot">Public spending</option>
+      <option value="PresupuestosNorm">Public spending per capita</option>
+      <option value="Agrario">Agriculture % of workforce</option>
+      <option value="Paro">Unemployment</option>
+      <option value="Poblacion">Population</option>
+      <option value="PIB">GDP</option>
+      <option value="Flow">Emigration flow from selected province</option>
+      <option value="net">Net migration</option>
+      <option value="Doctores18">Number of doctors per 10000 people</option>
+      <option value="quiebras">Banckrupcies</option>
+      <option value="quiebraspc">Banckrupcies normalized</option>
+      <option value="imd">R&D businesses</option>
+      <option value="imdnorm">R&D businesses normalized</option>
+      <option value="natalidad">Birth rate</option>
+    </select>
+    <select id= "3splom" class="splom_select">
+      <option value="PresupuestosTot">Public spending</option>
+      <option value="PresupuestosNorm">Public spending per capita</option>
+      <option value="Agrario">Agriculture % of workforce</option>
+      <option value="Paro">Unemployment</option>
+      <option value="Poblacion">Population</option>
+      <option value="PIB">GDP</option>
+      <option value="Flow">Emigration flow from selected province</option>
+      <option value="net">Net migration</option>
+      <option value="Doctores18">Number of doctors per 10000 people</option>
+      <option value="quiebras">Banckrupcies</option>
+      <option value="quiebraspc">Banckrupcies normalized</option>
+      <option value="imd">R&D businesses</option>
+      <option value="imdnorm">R&D businesses normalized</option>
+      <option value="natalidad">Birth rate</option>
+    </select>
+   
+  </div>
+  
 
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script src="https://unpkg.com/d3-simple-slider"></script>

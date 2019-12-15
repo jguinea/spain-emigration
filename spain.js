@@ -1,3 +1,11 @@
+//TODO
+//Leyend net
+//Rotate ticks
+//Beautify
+//Set rules for select
+//Tutorial
+//Lenguage Select
+
 var viewWidth = window.innerWidth;
 var viewHeight = window.innerHeight;
 var test = d3.select("#test");
@@ -17,7 +25,9 @@ const semestres = ["2018S2","2018S1","2017S2","2017S1","2016S2","2016S1","2015S2
 const rural_code=["PU","PR","IN"]
 var type = "white"
 var selected_provinces = []
-var migration_flow = false
+var flow_splom = false
+var flow_splom_column = 0
+var selecting = false
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
 var projection = d3.geoConicConformalSpain()
@@ -46,7 +56,9 @@ var ruality = rurality
 var num_prov_selected = 28;
 var lista_destinos = get_destinos(num_prov_selected,data);
 var semestre= "total";
-domain = get_domain(num_prov_selected,lista_destinos,semestre);
+var domain = get_domain(num_prov_selected,lista_destinos,semestre);
+var columns =["Agrario","Paro","PIB","PresupuestosNorm"]
+
 
 //Escalas de colores
 var linColor = d3.scaleLinear()
@@ -62,7 +74,7 @@ var scaleColor = d3.scaleLinear()
 .range(["blue", "white", "red"]);
 
 //Dibujarlo todo
-draft_map();
+draw_map(type,num_prov_selected,lista_destinos,semestre);
 button_listner();
 draw_splom(type,splom_size,splom_padding)
 uncheck();
@@ -70,20 +82,18 @@ uncheck();
 
 //MAPS
 
-//Base Map
-function draft_map() {
-  svg.selectAll("path")
+
+
+function draw_map(type,prov_sel,lista_destinos,semestre){
+  if (type=="white"){
+    svg.selectAll("path")
     .data(provincias.features)
     // features es la lista de provincias
     .enter().append("path")
     .attr("d", path)
     .attr("class","map")
     .style("fill", "white");
-}
-
-
-function draw_map(type,prov_sel,lista_destinos,semestre){
-
+  }
   if(type=="urbanizacion"){
     $("#where").text("");
     $("#who").text("");
@@ -97,16 +107,17 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
       .attr("d", path)
       .attr("class","map")
       .style("fill",function(d){
+        var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
         try {
           var rural=rurality.find(element => element["codigo"]==parseInt(d["properties"]["cod_prov"]))["ruralidad"]
         }
         catch(error) {
           
         }
-        if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1){
-          return catColors(rural)
+        if (selecting&selected_provinces.indexOf(num_str)==-1){
+          return "white"
         }
-        return "white"
+        return catColors(rural)
       })
       .on("click",function(d){
         num_prov_selected=d["properties"]["cod_prov"]
@@ -145,9 +156,10 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
           catch(error) {
             console.error(d["properties"]["cod_prov"]);
           }
-          if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
-            return catColors(rural)
-          return "white"
+          var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
+          if (selecting&selected_provinces.indexOf(num_str)==-1)
+            return "white"
+          return catColors(rural)
         })
       })
   }
@@ -165,9 +177,10 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
       .attr("d", path)
       .attr("class","map")
       .style("fill",function(d){
-        if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
-          return getColorFlow(d["properties"]["cod_prov"],prov_sel,semestre);
-        return "white"    
+        var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
+        if (selecting&selected_provinces.indexOf(num_str)==-1)
+          return "white"
+        return getColorFlow(d["properties"]["cod_prov"],prov_sel,semestre)
       })
       .on("mouseover",function(d) {
         name_destino = d["properties"]["name"]
@@ -179,9 +192,10 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
       .on("mouseout",function(d){
         d3.select(this)
         .style("fill",function(d){
-          if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
-            return getColorFlow(d["properties"]["cod_prov"],prov_sel,semestre);
-          return "white"
+          var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
+          if (selecting&selected_provinces.indexOf(num_str)==-1)
+            return "white"
+          return getColorFlow(d["properties"]["cod_prov"],prov_sel,semestre)
         })
       })
       .on("click",function(d){
@@ -210,7 +224,10 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
         } catch (error) {
           
         }
-        return scaleColor(value);
+        var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
+        if (selecting&selected_provinces.indexOf(num_str)==-1)
+          return "white"
+        return scaleColor(value)
       })
       .on("mouseover",function(d) {
         try {
@@ -232,9 +249,10 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
         } catch (error) {
           
         }
-        if (selected_provinces.indexOf(d["properties"]["cod_prov"])==-1)
-          return scaleColor(value);
-        return "white"
+        var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
+        if (selecting&selected_provinces.indexOf(num_str)==-1)
+          return "white"
+        return scaleColor(value)
       })
       })
       .on("click",function(d){
@@ -361,20 +379,29 @@ function button_listner(){
     update_map(type,num_prov_selected,lista_destinos,"total")
     update_splom(type,splom_size,splom_padding)
   })
-  const buttons_splom = d3.selectAll('.splom_selection');
-  buttons_splom.on('change', function(d) {
-    console.log(typeof this.value)
-    if(this.value=="true")
-      migration_flow=true
-    else
-      migration_flow=false
+  const selection_splom = d3.selectAll(".splom_select")
+  selection_splom.on('change', function(d){
+    for (i =0; i<4; i++){
+      var splom_name = "#"+ i+"splom"
+      if ($(splom_name).val()=="Flow"){
+        flow_splom=true
+        flow_splom_column=i
+      }
+
+    }
+    var column = this.id[0]
+    var value = this.value
+    columns[column]=value
     update_splom(type,splom_size,splom_padding)
+    
   })
 }
 
 
 function selection_listner(sprovinces){
   selected_provinces=sprovinces
+  update_map(type,num_prov_selected,lista_destinos,semestre)
+
 }
 
 function draw_legend(domain,type){
@@ -486,10 +513,14 @@ function resize(){
 
 function uncheck(){
   var checkboxes = $(".selection");
-  console.log(checkboxes.length)
   for (var i=0; i<checkboxes.length; i++)  {
     checkboxes[i].checked = false;
   }
+
+  $("#0splom").val('Agrario');
+  $("#1splom").val('Paro');
+  $("#2splom").val('PIB');
+  $("#3splom").val('PresupuestosNorm');
 }
 
 
@@ -498,12 +529,9 @@ function draw_splom(type,size, padding){
   
   var num_str = (num_prov_selected>9) ? parseInt(num_prov_selected) : num_prov_selected
 
-
-  var columns_budget =["Agrario","Paro","PIB","PresupuestosNorm"]
-  var columns_flow =["Agrario","Paro","PIB",num_str]
-  columns = (migration_flow) ? columns_flow : columns_budget
-  console.log(num_prov_selected,columns)
-
+  
+  if (flow_splom)
+    columns[flow_splom_column] = num_str
   var data=splom_data
 
   var svg = d3.select("body")
@@ -609,7 +637,8 @@ function draw_splom(type,size, padding){
       .attr("x",padding)
       .attr("y",padding)
       .attr("dy",".71em")
-      .text(function(d){
+      .text(
+        function(d){
         switch(d){
           case "Agrario":
             return "Agriculture workers (%)"
@@ -619,6 +648,24 @@ function draw_splom(type,size, padding){
             return "GDP per capita (€)"
           case "PresupuestosNorm":
             return "Investment p.c. (€)"
+          case "PresupuestosTot":
+            return "Public spending"
+          case "Poblacion":
+            return "Population"
+          case "n0et":
+            return "Net migration"
+          case "Doctores18":
+            return "# Doctors"
+          case "quiebras":
+            return "Banckrupcies"
+          case "quiebraspc":
+            return "Banckrupcies normalized"
+          case "imd":
+            return "R&D businesses"
+          case "imdnorm":
+            return "R&D businesses normalized"
+          case "natalidad":
+            return "Birthrate"
         }
         for (province in nombres_provincias){
           if (nombres_provincias[province]["id"]==d)
@@ -636,14 +683,16 @@ function draw_splom(type,size, padding){
   var sprovinces=[]
 
   brush.on("start",function(){
-      selected_provinces = []
+      selecting =true
       if(brushCell != this){
           d3.select(brushCell).call(brush.move,null);
           brushCell = this;
       }
+      console.log("start")
   });
 
   brush.on("brush",function([i,j]){
+      sprovinces=[] 
       if(d3.event.selection == null)
           return;
       const [[x0,y0],[x1,y1]] = d3.event.selection;
@@ -659,6 +708,7 @@ function draw_splom(type,size, padding){
             selection_listner(sprovinces)
           }
           return splom_color(type,d);
+
       });
   });
 
@@ -666,8 +716,11 @@ function draw_splom(type,size, padding){
   brush.on("end",function(){
       if(d3.event.selection != null)
           return;
-          
+      sprovinces=[]
+      selection_listner(sprovinces)    
       circle.attr("fill",d => splom_color(type,d));
+      selecting=false
+      selection_listner(sprovinces)
   });
 
   function splom_color(type,d){
