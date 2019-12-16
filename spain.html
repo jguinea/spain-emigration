@@ -5,7 +5,9 @@
 </head>
 <body>
  
-  <h1 id="title">Empty Spain</h1>
+  <div class="header">
+    <h1 id="title">Empty Spain</h1>
+  </div>
   
   <form id="buttons">
     <input class="time_selection selection" type="radio" name="time" value="flow"> Migration Flow<br>
@@ -80,6 +82,14 @@
     </select>
    
   </div>
+
+  <div class="clearfix">
+    <div id="svg_map">
+    </div>
+    <div id="svg_splom">
+    </div>
+  </div>
+  
   
 
 <script src="//d3js.org/d3.v4.min.js"></script>
@@ -96,8 +106,8 @@
 <script src="spain.js"></script>
 
 <div id="info">
-  <br/><b id="where"></b>
-  <br/><b id="who"></b>
+  <b id="where"></b><br/>
+  <b id="who"></b>
 </div>
 
 </body>

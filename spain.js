@@ -7,11 +7,11 @@
 
 var viewWidth = window.innerWidth;
 var viewHeight = window.innerHeight;
-var test = d3.select("#test");
 
 var margin = {top: 60, right: 20, bottom: 60, left: 40};
 var width = viewWidth - margin.left - margin.right;
 var height = viewHeight - margin.top - margin.bottom;
+var mapdiv_width= $("#svg_map").width();
 var padding_legend = height/20;
 var legend_height = height/70;
 var legend_width = width/4 - (padding_legend * 2);
@@ -29,20 +29,19 @@ var flow_splom_column = 0
 var selecting = false
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
-var projection = d3.geoConicConformalSpain()
-  .translate([width / 3.5, height / 2]);
+var projection = d3.geoConicConformalSpain();
 // Añadir la proyección al path
 var path = d3.geoPath().projection(projection);
 
 //tamaño de la proyeccion
 var scale = height/0.2;
-projection.scale(scale);
- // .translate([width / 2, height / 2]);
+projection.scale(scale)
+  .translate([width / 3.6, height / 2]);
 
-var svg = d3.select("body").append("svg")
-  .attr("width", width)
-  .attr("height", height)
-  .attr("id","map");
+var svg = d3.select("#svg_map").append("svg")
+  .attr("width", mapdiv_width)
+  .attr("height", height);
+  //.attr("class","svg_map");
  
 //Guardar info de geometría
 provincias = geodata
@@ -141,7 +140,7 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
         }
         d3.select(this)
           .style("fill","#222831");
-        $("#who").text(name_prov_selected +" is " + rural_text + ".");
+        $("#where").text(name_prov_selected +" is " + rural_text + ".");
       })
       .on("mouseout",function(d){
         d3.select(this)
@@ -161,7 +160,7 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
   }
 
   if(type=="flow"){
-    $("#who").text("");
+    $("#where").text("");
     name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
     total = get_total(lista_destinos,semestre)
     $("#where").text("People from " +name_prov_selected+" moving away: "+total)
@@ -235,7 +234,7 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
         }
         d3.select(this)
           .style("fill","#222831")
-          $("#who").text("net "+name_province+" = "+value)
+          $("#where").text("net "+name_province+" = "+value)
       })
       .on("mouseout",function(d){
         d3.select(this)
@@ -473,11 +472,13 @@ function draw_legend(domain,type){
       .enter()
       .append("text")
       .attr("x", 100 + size*1.2)
-      .attr("y", function(d,i){ return 100 + i*(size+5) + (size/2)}) 
+      .attr("y", function(d,i){ return 100 + i*(size+5) + (size/1.2)}) 
       .style("fill", function(d){ return catColors(d)})
       .text(function(d){ return get_legend_string(d)})
       .attr("text-anchor", "left")
-      .style("alignment-baseline", "middle");
+      .style("alignment-baseline", "middle")
+      .style("font-weight", "bold")
+      .style("font-family",'Glegoo-Regular');
 
   }
 
@@ -570,9 +571,9 @@ function draw_splom(type,size, padding){
     columns[flow_splom_column] = num_str
   var data=splom_data
 
-  var svg = d3.select("body")
+  var svg = d3.select("#svg_splom")
               .append("svg")
-              .attr("class","splom")
+              .attr("id","splom")
               .attr("width",size*columns.length+padding)
               .attr("height",size*columns.length+padding)
               .append("g")
@@ -774,6 +775,6 @@ function draw_splom(type,size, padding){
 }
 
 function update_splom(type, size, padding){
-  $(".splom").remove()
-  draw_splom(type,size,padding)
+  $("#splom").remove();
+  draw_splom(type,size,padding);
 }
