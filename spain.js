@@ -1,6 +1,8 @@
 //TODO
 //Rotate ticks
 //Beautify
+    // botones
+    // leyenda
 //Set rules for select
 //Tutorial
 //Lenguage Select
@@ -778,3 +780,6 @@ function update_splom(type, size, padding){
   $("#splom").remove();
   draw_splom(type,size,padding);
 }
+
+// To style all selects
+$('select').selectpicker();

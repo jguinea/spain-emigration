@@ -19,7 +19,7 @@ body {
 
 #info{
   top: 0%;
-  left:1%;
+  margin-left: 10px;
 }
 
 .clearfix {
@@ -84,4 +84,30 @@ top: 25px;
 .legend {
   position: relative;
   bottom: 1%;
+}
+
+.col-sm-3 {
+  width: 23%;
+  padding: 4px;
+}
+
+/*.splom_select {
+  display:inline-block;
+  padding:0.3em 0.5em;
+  margin:0 0.3em 0.3em 0;
+  border-radius:1em;
+  box-sizing: border-box;
+  text-decoration:none;
+  color:#FFFFFF;
+  background-color:#4eb5f1;
+  text-align:center;
+  transition: all 1s;
+}
+.splom_select:hover{
+  background-color:#4095c6;
+}*/
+
+#custom-select {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-bottom: 5px;
 }
