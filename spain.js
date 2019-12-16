@@ -1,11 +1,10 @@
 //TODO
-//Rotate ticks
 //Beautify
     // botones
     // leyenda
 //Set rules for select
 //Tutorial
-//Lenguage Select
+//Language Select
 
 var viewWidth = window.innerWidth;
 var viewHeight = window.innerHeight;
@@ -162,8 +161,11 @@ function update_map(){
           
           if (province_id==selected_id)
             return "black"
-          if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
+          if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1){
+
             return "white"
+
+          }
           if (province_id <51){
             return linColor(splom_data.find(element => element["Codigo"]==selected_id)[province_id])
         }
@@ -182,7 +184,7 @@ function update_map(){
             console.log(error)
           }
           var province_id = d["properties"]["cod_prov"]
-          if (selecting&selected_provinces.indexOf(province_id)==-1)
+          if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
             return "white"
           return catColors(rural)
 
@@ -197,7 +199,7 @@ function update_map(){
           
         }
         var province_id = d["properties"]["cod_prov"]
-        if (selecting&selected_provinces.indexOf(province_id)==-1)
+        if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
           return "white"
         return scaleColor(value)
     })} 
@@ -584,8 +586,10 @@ function draw_splom(size, padding){
             return "Public spending"
           case "Poblacion":
             return "Population"
-          case "n0et":
+          case "net":
             return "Net migration"
+          case "netnorm":
+            return "Net migration normalized"
           case "Doctores18":
             return "# Doctors"
           case "quiebras":
