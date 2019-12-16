@@ -21,13 +21,6 @@ var splom_padding = height/20
 d3.select(window).on('resize', resize); //zoom
 
 
-const semestres = ["2018S2","2018S1","2017S2","2017S1","2016S2","2016S1","2015S2","2015S1","2014S2","2014S1","2013S2","2013S1","2012S2","2012S1","2011S2","2011S1","2010S2","2010S1","2009S2","2009S1","2008S2","2008S1"]
-const rural_code=["PU","PR","IN"]
-var type = "white"
-var selected_provinces = []
-var flow_splom = false
-var flow_splom_column = 0
-var selecting = false
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
 var projection = d3.geoConicConformalSpain()
@@ -48,15 +41,17 @@ var svg = d3.select("body").append("svg")
 //Guardar info de geometría
 provincias = geodata
 
-//JSON importado en el html 
-var data = emigration_data
-var ruality = rurality
 
-//Datos para Madrid (estático)
-var num_prov_selected = 28;
-var lista_destinos = get_destinos(num_prov_selected,data);
+
+const rural_code=["PU","PR","IN"]
+var type = "white"
+var flow_splom = false
+var flow_splom_column = 0
+var selecting = false
+var selected_provinces=[]
+var selected_id = 28;
 var semestre= "total";
-var domain = get_domain(num_prov_selected,lista_destinos,semestre);
+var domain = get_domain(selected_id);
 var columns =["Agrario","Paro","PIB","PresupuestosNorm"]
 
 
@@ -68,23 +63,26 @@ var catColors = d3.scaleOrdinal()
   .domain(rural_code)
   .range(d3.schemeCategory10);
 
-extent_net = d3.extent(net_provinces, d => d.net_migration)
+extent_net = d3.extent(splom_data, d => d.net)
 var scaleColor = d3.scaleLinear()
 .domain([extent_net[0], 0, extent_net[1]])
 .range(["blue", "white", "red"]);
 
 //Dibujarlo todo
-draw_map(type,num_prov_selected,lista_destinos,semestre);
+draw_map();
 button_listner();
 draw_splom(type,splom_size,splom_padding)
 uncheck();
+
 
 
 //MAPS
 
 
 
-function draw_map(type,prov_sel,lista_destinos,semestre){
+function draw_map(){
+  var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
+  console.log(type)
   if (type=="white"){
     svg.selectAll("path")
     .data(provincias.features)
@@ -98,8 +96,7 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
     $("#where").text("");
     $("#who").text("");
     
-    name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
-    total = get_total(lista_destinos,semestre)
+    total = get_total(selected_id)
     svg.selectAll("type")
       .data(provincias.features)
       // features es la lista de provincias
@@ -107,30 +104,29 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
       .attr("d", path)
       .attr("class","map")
       .style("fill",function(d){
-        var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
+        var province_id =  d["properties"]["cod_prov"]
         try {
-          var rural=rurality.find(element => element["codigo"]==parseInt(d["properties"]["cod_prov"]))["ruralidad"]
+          var rural=splom_data.find(element => element["Codigo"]==province_id)["Ruralidad"]
         }
         catch(error) {
           
         }
-        if (selecting&selected_provinces.indexOf(num_str)==-1){
+        if (selecting&selected_provinces.indexOf(province_id)==-1){
           return "white"
         }
         return catColors(rural)
       })
       .on("click",function(d){
-        num_prov_selected=d["properties"]["cod_prov"]
+        selected_id=d["properties"]["cod_prov"]
         update_splom(type,splom_size,splom_padding)
       })
       .on("mouseover",function(d) {
-        num_prov_selected = d["properties"]["cod_prov"];
-        name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
-         try {
-          var rural=rurality.find(element => element["codigo"]==parseInt(d["properties"]["cod_prov"]))["ruralidad"]
+        var province_id = d["properties"]["cod_prov"];
+        try {
+          var rural=splom_data.find(element => element["Codigo"]==province_id)["Ruralidad"]
         }
         catch(error) {
-
+          console.log(error)
         }
         switch (rural) {
           case "PU": 
@@ -150,41 +146,47 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
       .on("mouseout",function(d){
         d3.select(this)
         .style("fill",function(d){
+          var province_id = d["properties"]["cod_prov"];
           try {
-            var rural=rurality.find(element => element["codigo"]==parseInt(d["properties"]["cod_prov"]))["ruralidad"]
+            var rural=splom_data.find(element => element["Codigo"]==province_id)["Ruralidad"]
           }
           catch(error) {
             console.error(d["properties"]["cod_prov"]);
+            console.log(error)
           }
-          var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
-          if (selecting&selected_provinces.indexOf(num_str)==-1)
+          var province_id = d["properties"]["cod_prov"]
+          if (selecting&selected_provinces.indexOf(province_id)==-1)
             return "white"
           return catColors(rural)
         })
       })
   }
 
-  if(type=="flow"){
+  if(type=="flow"){    
     $("#who").text("");
-    name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
-    total = get_total(lista_destinos,semestre)
+    total = get_total(selected_id)
     $("#where").text("Peña que huye de "+name_prov_selected+": "+total)
-    
-    svg.selectAll("path")
+    svg.selectAll("type")
       .data(provincias.features)
-      // features es la lista de provincias
       .enter().append("path")
       .attr("d", path)
       .attr("class","map")
       .style("fill",function(d){
-        var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
-        if (selecting&selected_provinces.indexOf(num_str)==-1)
+
+        var province_id = d["properties"]["cod_prov"]
+        if (selecting&selected_provinces.indexOf(province_id)==-1)
           return "white"
-        return getColorFlow(d["properties"]["cod_prov"],prov_sel,semestre)
+        if (province_id <51){
+          console.log(linColor.domain())
+        console.log(splom_data.find(element => element["Codigo"]==selected_id)[province_id])
+        return linColor(splom_data.find(element => element["Codigo"]==selected_id)[province_id])
+        }
+        return "black"
       })
       .on("mouseover",function(d) {
-        name_destino = d["properties"]["name"]
-        numEmmigrants = getNumEmmigrants(d["properties"]["cod_prov"],lista_destinos,semestre)
+        var name_destino = d["properties"]["name"]
+        var province_id =  d["properties"]["cod_prov"]
+        var numEmmigrants = splom_data.find(element => element["Codigo"]==selected_id)[province_id]
         d3.select(this)
           .style("fill","#222831")
           $("#who").text("Peña de "+name_prov_selected+" a "+name_destino+": "+numEmmigrants)
@@ -192,16 +194,19 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
       .on("mouseout",function(d){
         d3.select(this)
         .style("fill",function(d){
-          var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
-          if (selecting&selected_provinces.indexOf(num_str)==-1)
+          var province_id =  d["properties"]["cod_prov"]
+          if (selecting&selected_provinces.indexOf(province_id)==-1)
             return "white"
-          return getColorFlow(d["properties"]["cod_prov"],prov_sel,semestre)
-        })
+          if (province_id <51)
+            return linColor(splom_data.find(element => element["Codigo"]==selected_id)[province_id])
+          return "black"          })
       })
       .on("click",function(d){
-        lista_destinos_new=get_destinos(d["properties"]["cod_prov"],data)
-        update_map(type,d["properties"]["cod_prov"],lista_destinos_new,semestre)
+        selected_id=d["properties"]["cod_prov"]
+        update_map()
         update_splom(type,splom_size,splom_padding)
+        d3.select(this)
+        .style("fill","black")
 
       })
   }
@@ -209,9 +214,8 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
   if(type=="net") {
     $("#where").text("");
     $("#who").text("");
-    name_prov_selected = nombres_provincias.find(obj => obj.id == prov_sel)["nm"];
 
-    svg.selectAll("path")
+    svg.selectAll("type")
       .data(provincias.features)
       // features es la lista de provincias
       .enter().append("path")
@@ -220,12 +224,13 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
       .style("fill", function(d) {
         num_prov= d["properties"]["cod_prov"];
         try {
-          value = net_provinces.find(obj => obj.id == num_prov)["net_migration"];
+          value = splom_data.find(element => element["Codigo"]==num_prov)["net"];
         } catch (error) {
-          
+          console.log(num_prov)
+          console.log(error)
         }
-        var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
-        if (selecting&selected_provinces.indexOf(num_str)==-1)
+        var province_id = d["properties"]["cod_prov"]
+        if (selecting&selected_provinces.indexOf(province_id)==-1)
           return "white"
         return scaleColor(value)
       })
@@ -233,7 +238,7 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
         try {
           num_prov= d["properties"]["cod_prov"];
           name_province= d["properties"]["name"];
-          value = net_provinces.find(obj => obj.id == num_prov)["net_migration"];
+          value = splom_data.find(element => element["Codigo"]==num_prov)["net"];
         } catch (error) {
           
         }
@@ -245,18 +250,18 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
         d3.select(this)
         .style("fill",function(d){num_prov= d["properties"]["cod_prov"];
         try {
-          value = net_provinces.find(obj => obj.id == num_prov)["net_migration"];
+          value = splom_data.find(element => element["Codigo"]==num_prov)["net"];
         } catch (error) {
           
         }
-        var num_str = (d["properties"]["cod_prov"]>9) ? parseInt(d["properties"]["cod_prov"]) : d["properties"]["cod_prov"]
-        if (selecting&selected_provinces.indexOf(num_str)==-1)
+        var province_id = d["properties"]["cod_prov"]
+        if (selecting&selected_provinces.indexOf(province_id)==-1)
           return "white"
         return scaleColor(value)
       })
       })
       .on("click",function(d){
-        num_prov_selected=d["properties"]["cod_prov"]
+        selected_id=d["properties"]["cod_prov"]
         update_splom(type,splom_size,splom_padding)
       }); 
 
@@ -265,118 +270,42 @@ function draw_map(type,prov_sel,lista_destinos,semestre){
 }
 
 
-function update_map(type,num_prov_selected_new,lista_destinos_new,semestre_new){
-  $(".map").remove()
-  num_prov_selected=num_prov_selected_new
-  lista_destinos=lista_destinos_new
-  semestre=semestre_new
-  domain = get_domain(num_prov_selected,lista_destinos,semestre)
+function update_map(){
+  domain = get_domain(selected_id)
   linColor.domain(domain);
-  draw_map(type,num_prov_selected,lista_destinos,semestre)
+  draw_map()
   $(".legend").remove()
   draw_legend(domain,type)
 }
 
-//Carga la lista de destinos a partir de la provincia de procedencia
-function get_destinos(procedencia,data){
-  lista_destinos = [];
-  for (row in data){
-    if (data[row]["Procedencia"]==procedencia){
-      lista_destinos.push(data[row])
-    }
-  }
-  return lista_destinos
-}
 
-//Devuelve el dato de personas que emigraron a una provincia en particular de una lista de provincias en un semestre
-function getNumEmmigrants(provincia_destino,lista_destinos,semestre){
-  
-  if (semestre=="total"){
-    for (i in lista_destinos){
-      if (lista_destinos[i]["Destino"]==provincia_destino){
-        var temp=0;
-        for (s in semestres){
-          temp=temp+lista_destinos[i][semestres[s]]
-        }
-        return temp
-      }
-    }
-  }
-  else{
-    for (i in lista_destinos){
-        if (lista_destinos[i]["Destino"]==provincia_destino)
-          return lista_destinos[i][semestre];
-    }
-  }
-  
-}
 
 //Devuelve el máximo y mínimo valor de gente que ha emigrado a alguna provincia
-function get_domain(procedencia,lista_destinos,semestre){
-  var max=-1
-  var min = 10000000
-  var totales=[]
-  for (i in lista_destinos){
-    var temp = 0
-    if (lista_destinos[i]["Destino"]> 0& lista_destinos[i]["Destino"]!=procedencia){
-      for (s in semestres){
-        temp=temp+lista_destinos[i][semestres[s]]
-        totales.push(temp)
-      }
-    }
+function get_domain(procedencia){
+  arr = []
+  for(i=1;i<51;i++){
+    if (i != selected_id)
+      arr.push(splom_data.find(element => element["Codigo"]==procedencia)[i])
   }
-  if (semestre=="total"){
-    for (i in totales)
-      if (totales[i]>max)
-        max=totales[i]
-      if (totales[i]<min)
-        min=totales[i]
-  }
-  else{
-    for (i in lista_destinos){
-      if (lista_destinos[i][semestre]>max&lista_destinos[i]["Destino"]>0)
-        max=lista_destinos[i][semestre]
-      if (lista_destinos[i][semestre]<min & lista_destinos[i]["Destino"]!=procedencia)
-        min=lista_destinos[i][semestre]
-    }
-  }
-  return [min,max]
+  return d3.extent(arr)
 }
 
-function get_total(lista_destinos,semestre){
+function get_total(selected_id){
+  var province = splom_data.find(element => element["Codigo"]==selected_id)
+  var total = 0
+  for (i=1;i<51;i++){
+    total = total+province[i]
+  }
+  return total
   
-  if (semestre=="total"){
-    for (i in lista_destinos){
-      if (lista_destinos[i]["Destino"]==0){
-        var temp = 0
-        for (s in semestres)
-          temp=temp+lista_destinos[i][semestres[s]]
-        return temp
-      } 
-    } 
-  }
-  else {
-    for (i in lista_destinos){
-        if (lista_destinos[i]["Destino"]==0)
-          return lista_destinos[i][semestre]  
-    }
-  }
 }
 
-function getColorFlow(provincia_destino, provincia_origen,semestre){
-  if (provincia_destino == provincia_origen)
-    return "#CCC"
-    //colorea la provincia seleccionada distinto
-
-  value = getNumEmmigrants(provincia_destino,lista_destinos,semestre)
-  return linColor(value)
-}
 
 function button_listner(){
   const buttons_map = d3.selectAll('.time_selection');
   buttons_map.on('change', function(d) {
     type = this.value
-    update_map(type,num_prov_selected,lista_destinos,"total")
+    update_map()
     update_splom(type,splom_size,splom_padding)
   })
   const selection_splom = d3.selectAll(".splom_select")
@@ -399,8 +328,18 @@ function button_listner(){
 
 
 function selection_listner(sprovinces){
-  selected_provinces=sprovinces
-  update_map(type,num_prov_selected,lista_destinos,semestre)
+  var eq = true
+  for (p in sprovinces){
+    if (selected_provinces.indexOf(sprovinces[p])==-1)
+      eq = false
+  }
+  if (!eq){
+    console.log(sprovinces)
+    selected_provinces.splice(0,selected_provinces.length)
+    selected_provinces.push(sprovinces)
+    
+  }
+  
 
 }
 
@@ -527,11 +466,11 @@ function uncheck(){
 function draw_splom(type,size, padding){
 
   
-  var num_str = (num_prov_selected>9) ? parseInt(num_prov_selected) : num_prov_selected
+  var province_id =  selected_id
 
   
   if (flow_splom)
-    columns[flow_splom_column] = num_str
+    columns[flow_splom_column] = province_id
   var data=splom_data
 
   var svg = d3.select("body")
@@ -680,7 +619,6 @@ function draw_splom(type,size, padding){
   cell.call(brush);
       
   var brushCell;
-  var sprovinces=[]
 
   brush.on("start",function(){
       selecting =true
@@ -688,7 +626,6 @@ function draw_splom(type,size, padding){
           d3.select(brushCell).call(brush.move,null);
           brushCell = this;
       }
-      console.log("start")
   });
 
   brush.on("brush",function([i,j]){
@@ -716,19 +653,20 @@ function draw_splom(type,size, padding){
   brush.on("end",function(){
       if(d3.event.selection != null)
           return;
-      sprovinces=[]
-      selection_listner(sprovinces)    
+      sprovinces=[] 
       circle.attr("fill",d => splom_color(type,d));
       selecting=false
       selection_listner(sprovinces)
+      update_map()
   });
 
   function splom_color(type,d){
     if (type == "flow"){
-      return getColorFlow(d["Codigo"],num_prov_selected,semestre)
+      var value = splom_data.find(obj => obj["Codigo"] == selected_id)[d["Codigo"]];
+      return  linColor(value)
     }
     if (type == "net"){
-      var value = net_provinces.find(obj => obj.id == d["Codigo"])["net_migration"];
+      var value = splom_data.find(obj => obj["Codigo"] == d["Codigo"])["net"];
       return scaleColor(value)
     }
     if (type == "urbanizacion")
