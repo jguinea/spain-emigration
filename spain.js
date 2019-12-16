@@ -71,7 +71,7 @@ var scaleColor = d3.scaleLinear()
 //Dibujarlo todo
 draw_map();
 button_listner();
-draw_splom(type,splom_size,splom_padding);
+draw_splom(splom_size,splom_padding);
 uncheck();
 
 
@@ -118,7 +118,7 @@ function draw_map(){
       })
       .on("click",function(d){
         selected_id=d["properties"]["cod_prov"]
-        update_splom(type,splom_size,splom_padding)
+        update_splom(splom_size,splom_padding)
       })
       .on("mouseover",function(d) {
         var province_id = d["properties"]["cod_prov"];
@@ -207,7 +207,7 @@ function draw_map(){
       .on("click",function(d){
         selected_id=d["properties"]["cod_prov"]
         update_map()
-        update_splom(type,splom_size,splom_padding)
+        update_splom(splom_size,splom_padding)
         d3.select(this)
         .style("fill","black")
 
@@ -265,7 +265,7 @@ function draw_map(){
       })
       .on("click",function(d){
         selected_id=d["properties"]["cod_prov"]
-        update_splom(type,splom_size,splom_padding)
+        update_splom(splom_size,splom_padding)
       }); 
 
   }
@@ -310,7 +310,7 @@ function button_listner(){
   buttons_map.on('change', function(d) {
     type = this.value
     update_map()
-    update_splom(type,splom_size,splom_padding)
+    update_splom(splom_size,splom_padding)
   })
   const selection_splom = d3.selectAll(".splom_select")
   selection_splom.on('change', function(d){
@@ -325,7 +325,7 @@ function button_listner(){
     var column = this.id[0]
     var value = this.value
     columns[column]=value
-    update_splom(type,splom_size,splom_padding)
+    update_splom(splom_size,splom_padding)
     
   })
 }
@@ -490,7 +490,7 @@ function resize(){
   svg.attr("width", width)
   .attr("height", height)  
   d3.selectAll("path").attr('d', path);
-  update_splom(type,splom_size,splom_padding)
+  update_splom(splom_size,splom_padding)
 
 }
 
@@ -508,7 +508,7 @@ function uncheck(){
 }
 
 
-function draw_splom(type,size, padding){
+function draw_splom(size, padding){
 
   
   var province_id =  selected_id
@@ -666,7 +666,6 @@ function draw_splom(type,size, padding){
   var brushCell;
 
   brush.on("start",function(){
-      selecting =true
       if(brushCell != this){
           d3.select(brushCell).call(brush.move,null);
           brushCell = this;
@@ -720,9 +719,9 @@ function draw_splom(type,size, padding){
   }
 }
 
-function update_splom(type, size, padding){
+function update_splom(size, padding){
   $("#splom").remove();
-  draw_splom(type,size,padding);
+  draw_splom(size,padding);
 }
 
 // To style all selects
