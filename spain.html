@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
-    <link rel="stylesheet" href="spain.css">
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+  <link rel="stylesheet" href="spain.css">
 </head>
 <body>
  
-  <h1 id="title">Empty Spain</h1>
-  <!-- <div id="test">
-    <p></p>
-  </div> -->
+  <div class="header">
+    <h1 id="title" style="font-weight: bold;">Empty Spain</h1>
+  </div>
   
   <form id="buttons">
     <input class="time_selection selection" type="radio" name="time" value="flow"> Migration Flow<br>
     <input class="time_selection selection" type="radio" name="time" value="net"> Net Migration<br>  
     <input class="time_selection selection" type="radio" name="time" value="urbanizacion"> Urbanization<br>  
   </form>
-  <div id="splomselect">
-    <select id="0splom" class="splom_select">
+  
+  <div id="custom-select" align="center">
+    <select id="0splom" class="splom_select selectpicker col-sm-3" data-style="btn-success">
       <option value="PresupuestosTot">Public spending</option>
       <option value="PresupuestosNorm">Public spending per capita</option>
       <option value="Agrario">Agriculture % of workforce</option>
@@ -32,7 +35,7 @@
       <option value="imdnorm">R&D businesses normalized</option>
       <option value="natalidad">Birth rate</option>
     </select>
-    <select id="1splom" class="splom_select">
+    <select id="1splom" class="splom_select selectpicker col-sm-3" data-style="btn-success">
       <option value="PresupuestosTot">Public spending</option>
       <option value="PresupuestosNorm">Public spending per capita</option>
       <option value="Agrario">Agriculture % of workforce</option>
@@ -48,7 +51,7 @@
       <option value="imdnorm">R&D businesses normalized</option>
       <option value="natalidad">Birth rate</option>
     </select>
-    <select id="2splom" class="splom_select">
+    <select id="2splom" class="splom_select selectpicker col-sm-3" data-style="btn-success">
       <option value="PresupuestosTot">Public spending</option>
       <option value="PresupuestosNorm">Public spending per capita</option>
       <option value="Agrario">Agriculture % of workforce</option>
@@ -64,7 +67,7 @@
       <option value="imdnorm">R&D businesses normalized</option>
       <option value="natalidad">Birth rate</option>
     </select>
-    <select id= "3splom" class="splom_select">
+    <select id= "3splom" class="splom_select selectpicker col-sm-3" data-style="btn-success"> 
       <option value="PresupuestosTot">Public spending</option>
       <option value="PresupuestosNorm">Public spending per capita</option>
       <option value="Agrario">Agriculture % of workforce</option>
@@ -82,6 +85,14 @@
     </select>
    
   </div>
+
+  <div class="clearfix">
+    <div id="svg_map">
+    </div>
+    <div id="svg_splom">
+    </div>
+  </div>
+  
   
 
 <script src="//d3js.org/d3.v4.min.js"></script>
@@ -90,15 +101,18 @@
 <script src="https://unpkg.com/d3-composite-projections@1.2.0"></script>
 <script src="data/geodata.js"></script>
 <script src="data/splom_data.js"></script>
-<script src="data/province_rurality.js"></script>
 <script src="data/nombres_provincias.js"></script>
-<script src="data/net_provinces_migrations.js"></script>
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
 <script src="//d3js.org/topojson.v1.js"></script>
 <script src="spain.js"></script>
 
 <div id="info">
-  <br/><b id="where"></b>
-  <br/><b id="who"></b>
+  <b id="where"></b><br/>
+  <b id="who"></b>
 </div>
 
 </body>

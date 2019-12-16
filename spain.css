@@ -9,11 +9,21 @@
 
 body {
   background-color: rgb(185, 185, 185);
+  font-family: 'Glegoo-Regular',sans-serif;
 }
 
-h1,div, form {
-  font-family: 'Glegoo-Regular',sans-serif;
+.header {
   text-align: center;
+  padding: 10px;
+}
+
+#info{
+  top: 0%;
+  margin-left: 10px;
+}
+
+.clearfix {
+  overflow: auto;
 }
 
 p {
@@ -33,42 +43,21 @@ path.active {
   fill: pink;
 }
 
-.title {
-  position:absolute;
-  left:1%;
-  top: 0px;
-}
-.map{
+/* .map{
   position:absolute;
   left:1%;
   top: 18%;
   z-index: -1;
-}
-#slider{
-  position:absolute;
-  left:1%;
-  top:25%;
-} 
-#info{
-  position:absolute;
-  left:1%;
-  bottom:2%;
-}
+} */
 
 #buttons{
   position: absolute;
   left: 1%;
 }
 
-#leyend{
-  position: absolute;
-  bottom: 0px;
-  right: 10px;
-} 
-
-.splom {
-  position: absolute;
-right: 3%;
+#splom {
+position: relative;
+left: 2%;
 }
 
 #sploming {
@@ -77,4 +66,48 @@ right: 3%;
 right: 114px;
 
 top: 25px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#svg_map {
+  float: left;
+  width: 55%;
+}
+#svg_splom {
+  float: left;
+  width: 45%;
+}
+
+.legend {
+  position: relative;
+  bottom: 1%;
+}
+
+.col-sm-3 {
+  width: 23%;
+  padding: 4px;
+}
+
+/*.splom_select {
+  display:inline-block;
+  padding:0.3em 0.5em;
+  margin:0 0.3em 0.3em 0;
+  border-radius:1em;
+  box-sizing: border-box;
+  text-decoration:none;
+  color:#FFFFFF;
+  background-color:#4eb5f1;
+  text-align:center;
+  transition: all 1s;
+}
+.splom_select:hover{
+  background-color:#4095c6;
+}*/
+
+#custom-select {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-bottom: 5px;
 }

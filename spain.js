@@ -1,18 +1,19 @@
 //TODO
-//Leyend net
 //Rotate ticks
 //Beautify
+    // botones
+    // leyenda
 //Set rules for select
 //Tutorial
 //Lenguage Select
 
 var viewWidth = window.innerWidth;
 var viewHeight = window.innerHeight;
-var test = d3.select("#test");
 
 var margin = {top: 60, right: 20, bottom: 60, left: 40};
 var width = viewWidth - margin.left - margin.right;
 var height = viewHeight - margin.top - margin.bottom;
+var mapdiv_width= $("#svg_map").width();
 var padding_legend = height/20;
 var legend_height = height/70;
 var legend_width = width/4 - (padding_legend * 2);
@@ -23,20 +24,19 @@ d3.select(window).on('resize', resize); //zoom
 
 
 //Esta es la proyeccion sobre la que se coloca la geometría del mapa
-var projection = d3.geoConicConformalSpain()
-  .translate([width / 3.5, height / 2]);
+var projection = d3.geoConicConformalSpain();
 // Añadir la proyección al path
 var path = d3.geoPath().projection(projection);
 
 //tamaño de la proyeccion
 var scale = height/0.2;
-projection.scale(scale);
- // .translate([width / 2, height / 2]);
+projection.scale(scale)
+  .translate([width / 3.6, height / 2]);
 
-var svg = d3.select("body").append("svg")
-  .attr("width", width)
-  .attr("height", height)
-  .attr("id","map");
+var svg = d3.select("#svg_map").append("svg")
+  .attr("width", mapdiv_width)
+  .attr("height", height);
+  //.attr("class","svg_map");
  
 //Guardar info de geometría
 provincias = geodata
@@ -65,13 +65,13 @@ var catColors = d3.scaleOrdinal()
 
 extent_net = d3.extent(splom_data, d => d.net)
 var scaleColor = d3.scaleLinear()
-.domain([extent_net[0], 0, extent_net[1]])
-.range(["blue", "white", "red"]);
+  .domain([extent_net[0], 0, extent_net[1]])
+  .range(["blue", "white", "red"]);
 
 //Dibujarlo todo
 draw_map();
 button_listner();
-draw_splom(type,splom_size,splom_padding)
+draw_splom(type,splom_size,splom_padding);
 uncheck();
 
 
@@ -82,7 +82,6 @@ uncheck();
 
 function draw_map(){
   var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
-  console.log(type)
   if (type=="white"){
     svg.selectAll("path")
     .data(provincias.features)
@@ -92,6 +91,7 @@ function draw_map(){
     .attr("class","map")
     .style("fill", "white");
   }
+
   if(type=="urbanizacion"){
     $("#where").text("");
     $("#who").text("");
@@ -141,7 +141,8 @@ function draw_map(){
         }
         d3.select(this)
           .style("fill","#222831");
-        $("#who").text(name_prov_selected +" is " + rural_text + ".");
+          var name_hover = splom_data.find(element => element["Codigo"]==province_id)["Provincia"];
+        $("#where").text(name_hover +" is " + rural_text + ".");
       })
       .on("mouseout",function(d){
         d3.select(this)
@@ -162,10 +163,12 @@ function draw_map(){
       })
   }
 
-  if(type=="flow"){    
-    $("#who").text("");
+  if(type=="flow"){
+    $("#where").text("");
+    name_prov_selected = nombres_provincias.find(obj => obj.id == selected_id)["nm"];
     total = get_total(selected_id)
-    $("#where").text("Peña que huye de "+name_prov_selected+": "+total)
+    $("#where").text("People from " +name_prov_selected+" moving away: "+total)
+    
     svg.selectAll("type")
       .data(provincias.features)
       .enter().append("path")
@@ -189,7 +192,7 @@ function draw_map(){
         var numEmmigrants = splom_data.find(element => element["Codigo"]==selected_id)[province_id]
         d3.select(this)
           .style("fill","#222831")
-          $("#who").text("Peña de "+name_prov_selected+" a "+name_destino+": "+numEmmigrants)
+          $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmmigrants)
       })
       .on("mouseout",function(d){
         d3.select(this)
@@ -244,7 +247,7 @@ function draw_map(){
         }
         d3.select(this)
           .style("fill","#222831")
-          $("#who").text("net "+name_province+" = "+value)
+          $("#where").text("net "+name_province+" = "+value)
       })
       .on("mouseout",function(d){
         d3.select(this)
@@ -273,8 +276,9 @@ function draw_map(){
 function update_map(){
   domain = get_domain(selected_id)
   linColor.domain(domain);
-  draw_map()
-  $(".legend").remove()
+  draw_map();
+  $(".legend").remove(); 
+  $("#myGradient").remove();
   draw_legend(domain,type)
 }
 
@@ -344,13 +348,12 @@ function selection_listner(sprovinces){
 }
 
 function draw_legend(domain,type){
-  if (type=="flow"){
-    var range_third = domain
+  if (type=="flow") {
+    var range_third = domain;
   
     var legend_data = [{"color":"#e6ffe6","value":range_third[0]},{"color":"#008000","value":range_third[1]}];
     var extent = d3.extent(legend_data, d => d.value);
    
-  
     var xScale = d3.scaleLinear()
         .range([0, legend_width])
         .domain(extent);
@@ -361,13 +364,12 @@ function draw_legend(domain,type){
         .tickSize(legend_height * 2)
         .tickValues(xTicks);
     var position=padding_legend*17;
-    var g = svg.append("g")
-      .attr("id","legend")
+    var g = svg.append("g") 
       .attr("transform", "translate("+padding_legend*17+","+position+")")
       .attr("class","legend");
   
-    var defs = svg.append("defs");
-    var linearGradient = defs.append("linearGradient").attr("id", "myGradient");
+    //var defs = svg.append("defs");
+    var linearGradient = svg.append("linearGradient").attr("id", "myGradient");
     linearGradient.selectAll("stop")
       .data(legend_data)
       .enter().append("stop")
@@ -385,6 +387,7 @@ function draw_legend(domain,type){
       .select(".domain").remove();
     return xAxis;
   }
+
   if (type == "urbanizacion"){
     function get_legend_string(code){
       switch(code){
@@ -416,13 +419,55 @@ function draw_legend(domain,type){
       .enter()
       .append("text")
       .attr("x", 100 + size*1.2)
-      .attr("y", function(d,i){ return 100 + i*(size+5) + (size/2)}) 
+      .attr("y", function(d,i){ return 100 + i*(size+5) + (size/1.2)}) 
       .style("fill", function(d){ return catColors(d)})
       .text(function(d){ return get_legend_string(d)})
       .attr("text-anchor", "left")
-      .style("alignment-baseline", "middle");
+      .style("alignment-baseline", "middle")
+      .style("font-weight", "bold")
+      .style("font-family",'Glegoo-Regular');
 
   }
+
+  if (type == "net"){
+    var range_third = scaleColor.domain();
+  
+    var legend_data = [{"color":"blue","value":range_third[0]},{"color":"white","value":range_third[1]},{"color":"red","value":range_third[2]}];
+    var extent = d3.extent(legend_data, d => d.value);
+
+    var xScale = d3.scaleLinear()
+        .range([0, legend_width])
+        .domain(extent);
+  
+    var xTicks = scaleColor.domain();
+  
+    var xAxis = d3.axisBottom(xScale)
+        .tickSize(legend_height * 2)
+        .tickValues(xTicks);
+    var position=padding_legend*17;
+    var g = svg.append("g")
+      .attr("transform", "translate("+padding_legend*17+","+position+")")
+      .attr("class","legend");
+  
+    //var defs = svg.append("defs");
+    var linearGradient = svg.append("linearGradient").attr("id", "myGradient");
+    linearGradient.selectAll("stop")
+      .data(legend_data)
+      .enter().append("stop")
+        .attr("offset", d => ((d.value - extent[0]) / (extent[1] - extent[0]) * 100) + "%")
+        .attr("stop-color", d => d.color);
+  
+    g.append("rect")
+        .attr("width", legend_width)
+        .attr("height", legend_height)
+        .style("fill", "url(#myGradient)");
+  
+    g.append("g")
+      .attr("class", "z axis")
+      .call(xAxis)
+      .select(".domain").remove();
+    return xAxis;
+  } 
 }
 
 
@@ -473,9 +518,9 @@ function draw_splom(type,size, padding){
     columns[flow_splom_column] = province_id
   var data=splom_data
 
-  var svg = d3.select("body")
+  var svg = d3.select("#svg_splom")
               .append("svg")
-              .attr("class","splom")
+              .attr("id","splom")
               .attr("width",size*columns.length+padding)
               .attr("height",size*columns.length+padding)
               .append("g")
@@ -676,6 +721,9 @@ function draw_splom(type,size, padding){
 }
 
 function update_splom(type, size, padding){
-  $(".splom").remove()
-  draw_splom(type,size,padding)
+  $("#splom").remove();
+  draw_splom(type,size,padding);
 }
+
+// To style all selects
+$('select').selectpicker();
