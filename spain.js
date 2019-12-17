@@ -5,6 +5,7 @@
 //Set rules for select
 //Tutorial
 //Language Select
+//Fix update splom
 
 var viewWidth = window.innerWidth;
 var viewHeight = window.innerHeight;
