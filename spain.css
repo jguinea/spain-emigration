@@ -8,7 +8,7 @@
 }
 
 body {
-  background-color: rgb(185, 185, 185);
+  background-color: rgb(195, 198, 201);
   font-family: 'Glegoo-Regular',sans-serif;
 }
 
@@ -53,7 +53,20 @@ path.active {
 #buttons{
   position: absolute;
   left: 1%;
-  top: 22%
+  top: 10%;
+  font-family: 'Quattrocento Sans', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  /* background-color: teal; */
+}
+
+.radio label {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+#title {
+  font-family: 'Glegoo-Regular',sans-serif;;
 }
 
 #splom {
@@ -111,4 +124,16 @@ top: 25px;
 #custom-select {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-bottom: 5px;
+}
+
+text.output {
+  font-family: 'Quattrocento Sans', sans-serif;
+  font-size: 16px;
+  color: black;
+}
+
+rect.output {
+  stroke: black;
+  fill-opacity: 70%;
+  fill: white;
 }

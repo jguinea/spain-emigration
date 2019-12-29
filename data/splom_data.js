@@ -1017,7 +1017,7 @@ splom_data=[
     "Paro": 9.89,
     "Ruralidad": "IN",
     "Codigo": 15,
-    "Provincia": "Coruña A",
+    "Provincia": "A Coruña",
     "Poblacion": 1122799,
     "PIB": 22.50042528,
     "PresupuestosNorm": 236.167827,

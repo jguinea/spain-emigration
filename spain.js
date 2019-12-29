@@ -18,7 +18,8 @@ var padding_legend = height/20;
 var legend_height = height/70;
 var legend_width = width/4 - (padding_legend * 2);
 var splom_size = height/4
-var splom_padding = height/20
+var splom_padding = height/20;
+var padding_output = 0; //150
 d3.select(window).on('resize', resize); //zoom
 
 
@@ -31,13 +32,49 @@ var path = d3.geoPath().projection(projection);
 //tamaño de la proyeccion
 var scale = height/0.2;
 projection.scale(scale)
-  .translate([width / 3.6, height / 2]);
+  .translate([width / 3.3, height / 2]);
 
 var svg = d3.select("#svg_map").append("svg")
   .attr("width", mapdiv_width)
   .attr("height", height);
   //.attr("class","svg_map");
- 
+
+////ADD TEXT LEFT TO THE MAP
+
+/*output = svg.append("g");
+
+output.append("rect").attr("class","output")
+  .attr("x","5")
+  .attr("y",padding_output)
+  .attr("width","275")
+  .attr("height","50") */
+
+//Add text below the map
+
+var ag1 = $("#info").width();
+var ag2 = $("#info").height();
+
+output = d3.select("#info").append("svg")
+  .attr("width",ag1)
+  .attr("height",50)
+  .append("g");
+
+output.append("rect").attr("class","output")
+  .attr("x","0")
+  .attr("y",padding_output)
+  .attr("width","350")
+  .attr("height","50");
+
+output.append("text").attr("class","output")
+  .attr("id","where")
+  .attr("y",padding_output+18)
+  .attr("x","10");
+
+output.append("text").attr("class","output")
+  .attr("id","who")
+  .attr("y",padding_output+40)
+  .attr("x","10");  
+
 //Guardar info de geometría
 provincias = geodata
 
@@ -78,8 +115,6 @@ uncheck();
 
 //MAPS
 
-
-
 function draw_map(){
     svg.selectAll("type")
     .data(provincias.features)
@@ -93,6 +128,30 @@ function draw_map(){
 
 
 function update_map(){
+  var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
+  if (type =="flow") {
+    $("#where").text("People from " +name_prov_selected+" moving away: total");///calcular total
+  }
+  if (type =="net") {
+    value = splom_data.find(element => element["Codigo"]==selected_id)["net"];
+    $("#where").text("net "+name_prov_selected+" = "+value);
+  }
+  if (type=="urbanizacion") {
+    var rural=splom_data.find(element => element["Codigo"]==selected_id)["Ruralidad"];
+    switch (rural) {
+      case "PU": 
+        rural_text = "primarily urban";
+        break;
+      case "PR": 
+        rural_text = "primarily rural";
+        break;
+      case "IN": 
+        rural_text = "intermidiate";
+        break;
+    }
+    $("#where").text(name_prov_selected +" is " + rural_text + ".");
+  }
+  $("#who").text("");
   domain = get_domain(selected_id)
   linColor.domain(domain);
   svg.selectAll("path")
@@ -101,6 +160,10 @@ function update_map(){
     selected_id=d["properties"]["cod_prov"]
     update_map()
     update_splom(splom_size,splom_padding)
+    if (type =="flow") {
+      var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
+      $("#where").text("People from " +name_prov_selected+" moving away: total");///calcular total
+    }
   })
   .on("mouseover",function(d) {
     if (type =="flow"){
@@ -430,12 +493,13 @@ function resize(){
   legend_width = width/4 - (padding_legend * 2);
   splom_size = height/4
   splom_padding = height/20
+  mapdiv_width= $("#svg_map").width();
   $(".legend").remove()
   draw_legend(domain,type)
-  scale = height/0.2  ;
+  scale = height/0.2 ;
   projection.scale(scale)
-  .translate([width / 3.5, height / 2]);
-  svg.attr("width", width)
+  .translate([width / 3.3, height / 2]);
+  svg.attr("width", mapdiv_width)
   .attr("height", height)  
   d3.selectAll("path").attr('d', path);
   update_splom(splom_size,splom_padding)
