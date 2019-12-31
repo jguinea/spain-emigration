@@ -30,26 +30,26 @@ var projection = d3.geoConicConformalSpain();
 var path = d3.geoPath().projection(projection);
 
 //tamaño de la proyeccion
-var scale = height/0.2;
+var scale = height/0.188;
 projection.scale(scale)
-  .translate([width / 3.3, height / 2]);
+  .translate([width / 3.4, height / 2]);
 
 var svg = d3.select("#svg_map").append("svg")
   .attr("width", mapdiv_width)
   .attr("height", height);
   //.attr("class","svg_map");
 
-////ADD TEXT LEFT TO THE MAP
+////ADD TEXT LEFT TO THE MAP  //add g to the map svg
 
-/*output = svg.append("g");
+/*output = svg.append("g"); 
 
 output.append("rect").attr("class","output")
   .attr("x","5")
   .attr("y",padding_output)
-  .attr("width","275")
+  .attr("width","290")
   .attr("height","50") */
 
-//Add text below the map
+//Add text below the map //add g to the info div
 
 var ag1 = $("#info").width();
 var ag2 = $("#info").height();
@@ -743,4 +743,7 @@ function update_splom(size, padding){
 }
 
 // To style all selects
-$('select').selectpicker();
+$('.selectpicker').selectpicker({
+  style: 'btn-dark',
+  width: '19%'
+});

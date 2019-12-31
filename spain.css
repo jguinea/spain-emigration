@@ -14,7 +14,7 @@ body {
 
 .header {
   text-align: center;
-  padding: 10px;
+  padding: 5px;
 }
 
 #info{
@@ -53,16 +53,16 @@ path.active {
 #buttons{
   position: absolute;
   left: 1%;
-  top: 10%;
+  top: 12%;
   font-family: 'Quattrocento Sans', sans-serif;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 16px;
   /* background-color: teal; */
 }
 
 .radio label {
   font-weight: 700;
-  font-size: 15px;
+  /* font-size: 15px; */
 }
 
 #title {
@@ -101,7 +101,6 @@ top: 25px;
 }
 
 .col-sm-3 {
-  width: 23%;
   padding: 4px;
 }
 
@@ -122,7 +121,7 @@ top: 25px;
 }*/
 
 #custom-select {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Quattrocento Sans', sans-serif;
   margin-bottom: 5px;
 }
 

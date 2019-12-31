@@ -102,13 +102,13 @@ nombres_provincias=[{
 	"nm": "Tarragona"
 }, {
 	"id": "03",
-	"nm": "Alicante/Alacant"
+	"nm": "Alicante"
 }, {
 	"id": "12",
-	"nm": "Castellón/Castelló"
+	"nm": "Castellón"
 }, {
 	"id": "46",
-	"nm": "Valencia/València"
+	"nm": "Valencia"
 }, {
 	"id": "06",
 	"nm": "Badajoz"
