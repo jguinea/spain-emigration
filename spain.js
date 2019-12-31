@@ -15,8 +15,8 @@ var width = viewWidth - margin.left - margin.right;
 var height = viewHeight - margin.top - margin.bottom;
 var mapdiv_width= $("#svg_map").width();
 var padding_legend = height/20;
-var legend_height = height/70;
-var legend_width = width/4 - (padding_legend * 2);
+var legend_height = width/180;
+var legend_width = height/2.2;
 var splom_size = height/4
 var splom_padding = height/20;
 var padding_output = 0; //150
@@ -36,8 +36,11 @@ projection.scale(scale)
 
 var svg = d3.select("#svg_map").append("svg")
   .attr("width", mapdiv_width)
-  .attr("height", height);
-  //.attr("class","svg_map");
+  .attr("height", height)
+  .attr("id","svg1");
+
+var svg1Width = $("#svg1").width();
+var svg1Height = $("#svg1").height();
 
 ////ADD TEXT LEFT TO THE MAP  //add g to the map svg
 
@@ -62,7 +65,7 @@ output = d3.select("#info").append("svg")
 output.append("rect").attr("class","output")
   .attr("x","0")
   .attr("y",padding_output)
-  .attr("width","350")
+  .attr("width","420")
   .attr("height","50");
 
 output.append("text").attr("class","output")
@@ -130,7 +133,8 @@ function draw_map(){
 function update_map(){
   var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
   if (type =="flow") {
-    $("#where").text("People from " +name_prov_selected+" moving away: total");///calcular total
+    total = get_total(selected_id);
+    $("#where").text("People from " +name_prov_selected+" moving away: "+ total);
   }
   if (type =="net") {
     value = splom_data.find(element => element["Codigo"]==selected_id)["net"];
@@ -162,7 +166,8 @@ function update_map(){
     update_splom(splom_size,splom_padding)
     if (type =="flow") {
       var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
-      $("#where").text("People from " +name_prov_selected+" moving away: total");///calcular total
+      total = get_total(selected_id);
+      $("#where").text("People from " +name_prov_selected+" moving away: "+ total);
     }
   })
   .on("mouseover",function(d) {
@@ -359,6 +364,7 @@ function button_listner(){
 
 
 function draw_legend(domain,type){
+  
   if (type=="flow") {
     var range_third = domain;
   
@@ -375,8 +381,9 @@ function draw_legend(domain,type){
         .tickSize(legend_height * 2)
         .tickValues(xTicks);
     var position=padding_legend*17;
-    var g = svg.append("g") 
-      .attr("transform", "translate("+padding_legend*17+","+position+")")
+    //console.log('svg1Width: ', svg1Width + '. positionX: ' + positionX);
+
+    var g = svg.append("g")
       .attr("class","legend");
   
     //var defs = svg.append("defs");
@@ -387,15 +394,28 @@ function draw_legend(domain,type){
         .attr("offset", d => ((d.value - extent[0]) / (extent[1] - extent[0]) * 100) + "%")
         .attr("stop-color", d => d.color);
   
+    g.append("text").attr("id","legend_text");
+    $('#legend_text').text("Migration Flow");
     g.append("rect")
+        .attr("y",5)
         .attr("width", legend_width)
         .attr("height", legend_height)
         .style("fill", "url(#myGradient)");
   
     g.append("g")
-      .attr("class", "z axis")
+      .attr("transform", "translate("+0+","+5+")")
+      .attr("class", "zAxis")
       .call(xAxis)
       .select(".domain").remove();
+    //return xAxis;
+
+    gLegendWidth = $('g.legend').get(0).getBBox().width;
+    gLegendHeight = $('g.legend').get(0).getBBox().height;
+
+    var positionX = svg1Width - gLegendWidth - 10300/svg1Height;
+    var positionY = svg1Height - gLegendHeight - 10800/svg1Height;
+
+    g.attr("transform", "translate("+positionX+","+positionY+")");
     return xAxis;
   }
 
@@ -412,15 +432,14 @@ function draw_legend(domain,type){
     }
     var size=legend_height*3
     var g = svg.append("g")
-      .attr("id","legend")
       .attr("class","legend");
 
     g.selectAll("mydots")
       .data(rural_code)
       .enter()
       .append("rect")
-      .attr("x", 100)
-      .attr("y", function(d,i){ return 100 + i*(size+5)}) 
+      //.attr("x", 100)
+      .attr("y", function(d,i){ return i*(size+5)}) 
       .attr("width", size)
       .attr("height", size)
       .style("fill", function(d){ return catColors(d)})
@@ -429,14 +448,22 @@ function draw_legend(domain,type){
       .data(rural_code)
       .enter()
       .append("text")
-      .attr("x", 100 + size*1.2)
-      .attr("y", function(d,i){ return 100 + i*(size+5) + (size/1.2)}) 
+      .attr("x", size*1.2)
+      .attr("y", function(d,i){ return i*(size+5) + (size/1.2)}) 
       .style("fill", function(d){ return catColors(d)})
       .text(function(d){ return get_legend_string(d)})
       .attr("text-anchor", "left")
       .style("alignment-baseline", "middle")
       .style("font-weight", "bold")
       .style("font-family",'Glegoo-Regular');
+
+    gLegendWidth = $('g.legend').get(0).getBBox().width;
+    gLegendHeight = $('g.legend').get(0).getBBox().height;
+  
+    var positionX = svg1Width - gLegendWidth - 10300/svg1Height;
+    var positionY = svg1Height - gLegendHeight - 10800/svg1Height;
+  
+    g.attr("transform", "translate("+positionX+","+positionY+")");
 
   }
 
@@ -455,9 +482,8 @@ function draw_legend(domain,type){
     var xAxis = d3.axisBottom(xScale)
         .tickSize(legend_height * 2)
         .tickValues(xTicks);
-    var position=padding_legend*17;
+
     var g = svg.append("g")
-      .attr("transform", "translate("+padding_legend*17+","+position+")")
       .attr("class","legend");
   
     //var defs = svg.append("defs");
@@ -468,15 +494,29 @@ function draw_legend(domain,type){
         .attr("offset", d => ((d.value - extent[0]) / (extent[1] - extent[0]) * 100) + "%")
         .attr("stop-color", d => d.color);
   
+    g.append("text").attr("id","legend_text");
+    $('#legend_text').text("Net Migration");
+
     g.append("rect")
+        .attr("y",5)
         .attr("width", legend_width)
         .attr("height", legend_height)
         .style("fill", "url(#myGradient)");
   
     g.append("g")
-      .attr("class", "z axis")
+      .attr("transform", "translate("+0+","+5+")")
+      .attr("class", "zAxis")
       .call(xAxis)
       .select(".domain").remove();
+
+    gLegendWidth = $('g.legend').get(0).getBBox().width;
+    gLegendHeight = $('g.legend').get(0).getBBox().height;
+  
+    var positionX = svg1Width - gLegendWidth - 10300/svg1Height;
+    var positionY = svg1Height - gLegendHeight - 10800/svg1Height;
+  
+    g.attr("transform", "translate("+positionX+","+positionY+")");
+
     return xAxis;
   } 
 }
@@ -488,19 +528,23 @@ function resize(){
   viewHeight = $(window).innerHeight();
   width = viewWidth - margin.left - margin.right;
   height = viewHeight - margin.top - margin.bottom;
+  mapdiv_width= $("#svg_map").width();
   padding_legend = height/20;
-  legend_height = height/70;
-  legend_width = width/4 - (padding_legend * 2);
+  legend_height = width/180;
+  legend_width = height/2.2;
   splom_size = height/4
   splom_padding = height/20
-  mapdiv_width= $("#svg_map").width();
-  $(".legend").remove()
-  draw_legend(domain,type)
+  $(".legend").remove(); 
+  $("#myGradient").remove();
   scale = height/0.2 ;
   projection.scale(scale)
-  .translate([width / 3.3, height / 2]);
+    .translate([width / 3.3, height / 2]);
+
   svg.attr("width", mapdiv_width)
-  .attr("height", height)  
+    .attr("height", height);
+  svg1Width = $("#svg1").width();
+  svg1Height = $("#svg1").height();
+  draw_legend(domain,type);
   d3.selectAll("path").attr('d', path);
   update_splom(splom_size,splom_padding)
 

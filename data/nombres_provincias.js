@@ -36,7 +36,7 @@ nombres_provincias=[{
 	"nm": "Asturias"
 }, {
 	"id": "07",
-	"nm": "Illes Balears"
+	"nm": "Islas Baleares"
 }, {
 	"id": "35",
 	"nm": "Las Palmas"
@@ -138,13 +138,13 @@ nombres_provincias=[{
 	"nm": "Navarra"
 }, {
 	"id": "01",
-	"nm": "Araba/Álava"
+	"nm": "Álava"
 }, {
 	"id": "48",
-	"nm": "Bizkaia"
+	"nm": "Vizcaya"
 }, {
 	"id": "20",
-	"nm": "Gipuzkoa"
+	"nm": "Guipúzcoa"
 }, {
 	"id": "26",
 	"nm": "La Rioja"

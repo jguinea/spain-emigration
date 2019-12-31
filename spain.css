@@ -9,7 +9,7 @@
 
 body {
   background-color: rgb(195, 198, 201);
-  font-family: 'Glegoo-Regular',sans-serif;
+  font-family: 'Quattrocento Sans', sans-serif;
 }
 
 .header {
@@ -20,6 +20,7 @@ body {
 #info{
   top: 0%;
   margin-left: 10px;
+  width: 50%;
 }
 
 .clearfix {
@@ -91,13 +92,13 @@ top: 25px;
   width: 55%;
 }
 #svg_splom {
-  float: left;
+  float: right;
   width: 45%;
 }
 
 .legend {
   position: relative;
-  bottom: 1%;
+  /* bottom: 1%; */
 }
 
 .col-sm-3 {
