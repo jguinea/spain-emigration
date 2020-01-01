@@ -82,7 +82,6 @@ output.append("text").attr("class","output")
 provincias = geodata
 
 
-
 const rural_code=["PU","PR","IN"]
 var type = "white"
 var flow_splom = false
@@ -132,6 +131,15 @@ function draw_map(){
 
 function update_map(){
   var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
+  $("#who").text("");
+  domain = get_domain(selected_id);
+  for(i=1;i<51;i++){
+    value = splom_data.find(element => element["Codigo"]==selected_id)[i];
+    if (value == domain [0]) { label_min = nombres_provincias.find(element => element["id"] == i)["nm"];}
+    if (value == domain [1]) label_max = nombres_provincias.find(element => element["id"] == i)["nm"];
+  }
+  ylabels = [label_min, label_max];
+  linColor.domain(domain);
   if (type =="flow") {
     total = get_total(selected_id);
     $("#where").text("People from " +name_prov_selected+" moving away: "+ total);
@@ -155,9 +163,6 @@ function update_map(){
     }
     $("#where").text(name_prov_selected +" is " + rural_text + ".");
   }
-  $("#who").text("");
-  domain = get_domain(selected_id)
-  linColor.domain(domain);
   svg.selectAll("path")
   .data(provincias.features)
   .on("click",function(d){
@@ -168,17 +173,22 @@ function update_map(){
       var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
       total = get_total(selected_id);
       $("#where").text("People from " +name_prov_selected+" moving away: "+ total);
+      domain = get_domain(selected_id);
+      update_barchar(domain, ylabels);
     }
   })
   .on("mouseover",function(d) {
     if (type =="flow"){
       var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
-      var name_destino = d["properties"]["name"]
+      var name_destino = d["properties"]["name"] 
       var province_id =  d["properties"]["cod_prov"]
       var numEmmigrants = splom_data.find(element => element["Codigo"]==selected_id)[province_id]
       d3.select(this)
         .style("fill","#222831")
-        $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmmigrants)
+        $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmmigrants);
+      datos = [domain[0],numEmmigrants,domain[1]];
+      ylabels_up = [label_min, name_destino, label_max];
+      update_barchar(datos, ylabels_up);
     }
     if (type=="net"){
       try {
@@ -310,7 +320,8 @@ function update_map(){
   });
   $(".legend").remove(); 
   $("#myGradient").remove();
-  draw_legend(domain,type)
+  draw_legend(domain,type);
+  draw_barchar(domain, ylabels);
 }
 
 
@@ -340,7 +351,7 @@ function button_listner(){
   const buttons_map = d3.selectAll('.time_selection');
   buttons_map.on('change', function(d) {
     
-    type = this.value
+    type = this.value;
     update_map()
     update_splom(splom_size,splom_padding)
   })
@@ -464,7 +475,6 @@ function draw_legend(domain,type){
     var positionY = svg1Height - gLegendHeight - 10800/svg1Height;
   
     g.attr("transform", "translate("+positionX+","+positionY+")");
-
   }
 
   if (type == "net"){
@@ -546,8 +556,7 @@ function resize(){
   svg1Height = $("#svg1").height();
   draw_legend(domain,type);
   d3.selectAll("path").attr('d', path);
-  update_splom(splom_size,splom_padding)
-
+  update_splom(splom_size,splom_padding);
 }
 
 
@@ -784,6 +793,49 @@ function draw_splom(size, padding){
 function update_splom(size, padding){
   $("#splom").remove();
   draw_splom(size,padding);
+}
+
+function draw_barchar(data, ylabels) {
+  if (type=="flow") {
+  new RGraph.SVG.HBar({
+    id: 'chart-container',
+    data: data,
+    options: {
+        yaxisLabels: ylabels,
+        yaxisTickmarks: false,
+        yaxisColor: '#8f8f8f',
+        colors: ["#008000"],
+        colorStroke: '#000000',
+        title: 'Comparison',
+        titleSize: 12,
+        backgroundGridHlines: false,
+        backgroundGridVlinesCount: 2,
+        xaxisLabelsCount: 2,
+        xaxisScaleMax: domain[1],
+        backgroundGridColor: '#8f8f8f',
+        backgroundGridBorder: false,
+        marginInner: 5,
+        /* marginBottom: 35, */
+        marginLeft: 85,
+        textFont: 'Quattrocento Sans',
+        textSize: 10,
+        xaxis: false
+    }
+}).draw();}
+else {
+  var svgbar = d3.select("#chart-container").select("svg")
+  svgbar.selectAll("rect").remove();
+  svgbar.selectAll("text").remove();
+  svgbar.selectAll("path").remove();
+}
+}
+
+function update_barchar(data, ylabels) {
+  var svgbar = d3.select("#chart-container").select("svg")
+  svgbar.selectAll("rect").remove();
+  svgbar.selectAll("text").remove();
+  svgbar.selectAll("path").remove();
+  draw_barchar(data, ylabels);
 }
 
 // To style all selects

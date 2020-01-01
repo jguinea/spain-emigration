@@ -33,7 +33,7 @@ p {
   font-size: 15px;
 }
 
-path {
+path.map {
   fill: #ccc;
   stroke: rgb(0, 0, 0);
   stroke-width: .7px;
@@ -136,4 +136,10 @@ rect.output {
   stroke: black;
   fill-opacity: 70%;
   fill: white;
+}
+
+#chart-container {
+  position: absolute;
+  left: 5px;
+  top: 200px;
 }
