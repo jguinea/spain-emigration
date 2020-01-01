@@ -1,7 +1,5 @@
 //TODO
 //Beautify
-    // botones
-    // leyenda
 //Set rules for select
 //Tutorial
 //Language Select
@@ -139,6 +137,7 @@ function update_map(){
     if (value == domain [1]) label_max = nombres_provincias.find(element => element["id"] == i)["nm"];
   }
   ylabels = [label_min, label_max];
+  barchar_data = domain;
   linColor.domain(domain);
   if (type =="flow") {
     total = get_total(selected_id);
@@ -173,8 +172,6 @@ function update_map(){
       var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
       total = get_total(selected_id);
       $("#where").text("People from " +name_prov_selected+" moving away: "+ total);
-      domain = get_domain(selected_id);
-      update_barchar(domain, ylabels);
     }
   })
   .on("mouseover",function(d) {
@@ -186,9 +183,7 @@ function update_map(){
       d3.select(this)
         .style("fill","#222831")
         $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmmigrants);
-      datos = [domain[0],numEmmigrants,domain[1]];
-      ylabels_up = [label_min, name_destino, label_max];
-      update_barchar(datos, ylabels_up);
+      update_barchar(numEmmigrants, name_destino);
     }
     if (type=="net"){
       try {
@@ -321,9 +316,8 @@ function update_map(){
   $(".legend").remove(); 
   $("#myGradient").remove();
   draw_legend(domain,type);
-  draw_barchar(domain, ylabels);
+  draw_barchar(barchar_data, ylabels);
 }
-
 
 
 //Devuelve el máximo y mínimo valor de gente que ha emigrado a alguna provincia
@@ -350,10 +344,9 @@ function get_total(selected_id){
 function button_listner(){
   const buttons_map = d3.selectAll('.time_selection');
   buttons_map.on('change', function(d) {
-    
     type = this.value;
-    update_map()
-    update_splom(splom_size,splom_padding)
+    update_map();
+    update_splom(splom_size,splom_padding);
   })
   const selection_splom = d3.selectAll(".splom_select")
   selection_splom.on('change', function(d){
@@ -391,8 +384,6 @@ function draw_legend(domain,type){
     var xAxis = d3.axisBottom(xScale)
         .tickSize(legend_height * 2)
         .tickValues(xTicks);
-    var position=padding_legend*17;
-    //console.log('svg1Width: ', svg1Width + '. positionX: ' + positionX);
 
     var g = svg.append("g")
       .attr("class","legend");
@@ -557,6 +548,9 @@ function resize(){
   draw_legend(domain,type);
   d3.selectAll("path").attr('d', path);
   update_splom(splom_size,splom_padding);
+  d3.select("#chart-container") //ARREGLAR ESTO!!!
+    .attr("width",+svg1Width/4+"px")
+    .attr("height",+svg1Height/3+"px");
 }
 
 
@@ -795,47 +789,49 @@ function update_splom(size, padding){
   draw_splom(size,padding);
 }
 
-function draw_barchar(data, ylabels) {
+function draw_barchar() {
+  $(".chartjs-size-monitor").remove();
+  $("canvas").remove();
   if (type=="flow") {
-  new RGraph.SVG.HBar({
-    id: 'chart-container',
-    data: data,
-    options: {
-        yaxisLabels: ylabels,
-        yaxisTickmarks: false,
-        yaxisColor: '#8f8f8f',
-        colors: ["#008000"],
-        colorStroke: '#000000',
-        title: 'Comparison',
-        titleSize: 12,
-        backgroundGridHlines: false,
-        backgroundGridVlinesCount: 2,
-        xaxisLabelsCount: 2,
-        xaxisScaleMax: domain[1],
-        backgroundGridColor: '#8f8f8f',
-        backgroundGridBorder: false,
-        marginInner: 5,
-        /* marginBottom: 35, */
-        marginLeft: 85,
-        textFont: 'Quattrocento Sans',
-        textSize: 10,
-        xaxis: false
-    }
-}).draw();}
-else {
-  var svgbar = d3.select("#chart-container").select("svg")
-  svgbar.selectAll("rect").remove();
-  svgbar.selectAll("text").remove();
-  svgbar.selectAll("path").remove();
-}
+    d3.select("#chart-container").append("canvas")
+      .attr("id","myChart");
+    var ctx = $('#myChart');
+    window.myHorizontalBar = new Chart(ctx, {
+      type: 'horizontalBar',
+        data: {
+            labels: ylabels,
+            datasets: [{
+                label: '# of Emmigrants',
+                data: barchar_data,
+                backgroundColor: "#008000",
+                borderColor: '#000000',
+                borderWidth: 1
+            }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            yAxes: [{
+                ticks: {
+                  beginAtZero: true
+                }
+            }]
+          }
+        }
+    });
+  } 
 }
 
-function update_barchar(data, ylabels) {
-  var svgbar = d3.select("#chart-container").select("svg")
-  svgbar.selectAll("rect").remove();
-  svgbar.selectAll("text").remove();
-  svgbar.selectAll("path").remove();
-  draw_barchar(data, ylabels);
+function update_barchar(numEmmigrants, name_destino) {
+  if (barchar_data.length > 2) {
+    barchar_data.splice(1, 1, numEmmigrants);
+    ylabels.splice(1, 1, name_destino);
+  }
+  else {
+    barchar_data.splice(1, 0, numEmmigrants);
+    ylabels.splice(1, 0, name_destino);
+  }
+  window.myHorizontalBar.update();
 }
 
 // To style all selects
