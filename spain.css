@@ -66,8 +66,9 @@ path.active {
   /* font-size: 15px; */
 }
 
-#title {
-  font-family: 'Glegoo-Regular',sans-serif;;
+.title {
+  font-family: 'Glegoo-Regular',sans-serif;
+  margin-left: 10px;
 }
 
 #splom {
@@ -140,6 +141,7 @@ rect.output {
   position: absolute;
   left: 5px;
   top: 250px; /*200px*/
+  width: 250px; height: 125px;
 }
 
 .navbar {

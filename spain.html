@@ -12,17 +12,17 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-default" style="margin-bottom: 10px;">
-        <div class="container-fluid" style="font-weight: 600">
+  <nav class="navbar navbar-default" style="margin-bottom: 10px;">
+      <div class="container-fluid" style="font-weight: 600">
           <div class="navbar-header">
             <a class="navbar-brand" href="#">Empty Spain</a>
           </div>
           <ul class="nav navbar-nav">
             <li class="active"><a href="#splom_tab">Splom</a></li>
-            <li><a href="#comp">Variable Comparison</a></li>
+            <li><a href="#comp_tab">Variable Comparison</a></li>
           </ul>
-        </div>
-      </nav>
+      </div>
+  </nav>
 
   <div id="buttons">
    <!--  <h2 id="title" style="font-weight: bold;">Empty Spain</h1>
@@ -38,10 +38,9 @@
           <label><input class="time_selection selection" type="radio" name="time" value="urbanizacion"> URBANIZATION</label>
         </div>
       </form>
-    </div>
+  </div>
 
-  </div> 
-  <div id="splom_tab">  
+<div id="splom_tab">  
   <div class="header">
     <div id="custom-select">
       <select id="0splom" class="splom_select selectpicker col-sm-3">
@@ -117,7 +116,7 @@
   </div>
   <div class="clearfix">
     <div id="svg_map">
-      <div style="width: 250px; height: 150px" id="chart-container">
+      <div id="chart-container">
         <canvas id="myChart" ></canvas>
       </div>
     </div>
@@ -131,22 +130,68 @@
 </div>
 
 <div id="comp_tab"> <!-- //EN CONSTRUCCION -->
-    <div id="comp">
-      <select class="splom_select selectpicker col-sm-3"> <!-- ordenar por rural/int/urban -->
-        <option value="Alava">Álava</option>
-        <option value="Albacete">Albacete</option>
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosTot">Public spending</option>
+  <h2 class="title">Comparison</h2>  
+  <div id="custom-select">
+      <select class="selectpicker col-sm-2" multiple data-max-options="3" data-live-search="true">
+          <optgroup label="Urban" >
+            <option data-tokens="urban" value="Barcelona">Barcelona</option>
+            <option data-tokens="urban" value="Guipuzcoa">Guipuzcoa</option>
+            <option data-tokens="urban" value="Madrid">Madrid</option>
+            <option data-tokens="urban" value="Malaga">Malaga</option>
+            <option data-tokens="urban" value="Sevilla">Sevilla</option>
+            <option data-tokens="urban" value="Valencia">Valencia</option>
+            <option data-tokens="urban" value="Vizcaya">Vizcaya</option>
+            <option data-tokens="urban" value="Zaragoza">Zaragoza</option>
+          </optgroup>
+          <optgroup label="Intermidiate">
+            <option data-tokens="intermidiate" value="Alava">Álava</option>
+            <option data-tokens="intermidiate" value="Alicante">Alicante</option>
+            <option data-tokens="intermidiate" value="Almeria">Almeria</option>
+            <option data-tokens="intermidiate" value="Asturias">Asturias</option>
+            <option data-tokens="intermidiate" value="Avila">Avila</option>
+            <option data-tokens="intermidiate" value="Islas Baleares">Islas Baleares</option>
+            <option data-tokens="intermidiate" value="Burgos">Burgos</option>
+            <option data-tokens="intermidiate" value="Cadiz">Cadiz</option>
+            <option data-tokens="intermidiate" value="Cantabria">Cantabria</option>
+            <option data-tokens="intermidiate" value="Castellon">Castellon</option>
+            <option data-tokens="intermidiate" value="Cordoba">Cordoba</option>
+            <option data-tokens="intermidiate" value="A Coruña">A Coruña</option>
+            <option data-tokens="intermidiate" value="Girona">Girona</option>
+            <option data-tokens="intermidiate" value="Granada">Granada</option>
+            <option data-tokens="intermidiate" value="Huelva">Huelva</option>
+            <option data-tokens="intermidiate" value="Leon">Leon</option>
+            <option data-tokens="intermidiate" value="La Rioja">La Rioja</option>
+            <option data-tokens="intermidiate" value="Murcia">Murcia</option>
+            <option data-tokens="intermidiate" value="Navarra">Navarra</option>
+            <option data-tokens="intermidiate" value="Palencia">Palencia</option>
+            <option data-tokens="intermidiate" value="Las Palmas">Las Palmas</option>
+            <option data-tokens="intermidiate" value="Pontevedra">Pontevedra</option>
+            <option data-tokens="intermidiate" value="Salamanca">Salamanca</option>
+            <option data-tokens="intermidiate" value="Santa Cruz de Tenerife" title="Tenerife">Santa Cruz de Tenerife</option>
+            <option data-tokens="intermidiate" value="Tarragona">Tarragona</option>
+            <option data-tokens="intermidiate" value="Valladolid">Valladolid</option>
+          </optgroup>
+          <optgroup label="Rural" data-tokens="rural">
+            <option data-tokens="rural" value="Albacete">Albacete</option>
+            <option data-tokens="rural"value="Badajoz">Badajoz</option>
+            <option data-tokens="rural" value="Caceres">Caceres</option>
+            <option data-tokens="rural" value="Ciudad Real">Ciudad Real</option>
+            <option data-tokens="rural" value="Cuenca">Cuenca</option>
+            <option data-tokens="rural" value="Guadalajara">Guadalajara</option>
+            <option data-tokens="rural" value="Huesca">Huesca</option>
+            <option data-tokens="rural" value="Jaen">Jaen</option>
+            <option data-tokens="rural" value="LLeida">LLeida</option>
+            <option data-tokens="rural" value="Lugo">Lugo</option>
+            <option data-tokens="rural" value="Ourense">Ourense</option>
+            <option data-tokens="rural" value="Segovia">Segovia</option>
+            <option data-tokens="rural" value="Soria">Soria</option>
+            <option data-tokens="rural" value="Teruel">Teruel</option>
+            <option data-tokens="rural" value="Toledo">Toledo</option>
+            <option data-tokens="rural" value="Zamora">Zamora</option>
+          </optgroup>
       </select>
-      <select class="splom_select selectpicker col-sm-3">
+          
+      <select class="selectpicker col-sm-2">
         <option value="PresupuestosTot">Public spending</option>
         <option value="PresupuestosNorm">Public spending per capita</option>
         <option value="Agrario">Agriculture % of workforce</option>
@@ -163,9 +208,11 @@
         <option value="imdnorm">R&D businesses normalized</option>
         <option value="natalidad">Birth rate</option>
       </select>
-      </div>
-
   </div>
+  <div id="comp-container">
+    <canvas id="compChart"></canvas>
+  </div>
+</div>
 
 
   

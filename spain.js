@@ -137,7 +137,7 @@ function update_map(){
     if (value == domain [1]) label_max = nombres_provincias.find(element => element["id"] == i)["nm"];
   }
   ylabels = [label_min, label_max];
-  barchar_data = domain;
+  barchar_data = [domain[0], domain[1]];
   linColor.domain(domain);
   if (type =="flow") {
     total = get_total(selected_id);
@@ -548,9 +548,10 @@ function resize(){
   draw_legend(domain,type);
   d3.selectAll("path").attr('d', path);
   update_splom(splom_size,splom_padding);
-  d3.select("#chart-container") //ARREGLAR ESTO!!!
-    .attr("width",+svg1Width/4+"px")
-    .attr("height",+svg1Height/3+"px");
+  d3.select("#chart-container")
+    .style("width",+svg1Width/3+"px")
+    .style("height",+(25/269)*svg1Height+20650/269+"px")
+    .style("top",+(86/273)*svg1Height+86.5+"px");
 }
 
 
@@ -792,37 +793,51 @@ function update_splom(size, padding){
 function draw_barchar() {
   $(".chartjs-size-monitor").remove();
   $("canvas").remove();
+  var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
   if (type=="flow") {
-    d3.select("#chart-container").append("canvas")
+    d3.select("#chart-container")
+      .style("width",+svg1Width/3+"px")
+      .style("height",+(25/269)*svg1Height+20650/269+"px")
+      .style("top",+(86/273)*svg1Height+86.5+"px")
+      .append("canvas")
       .attr("id","myChart");
     var ctx = $('#myChart');
     window.myHorizontalBar = new Chart(ctx, {
       type: 'horizontalBar',
-        data: {
-            labels: ylabels,
-            datasets: [{
-                label: '# of Emmigrants',
-                data: barchar_data,
-                backgroundColor: "#008000",
-                borderColor: '#000000',
-                borderWidth: 1
-            }]
+      data: {
+        labels: ylabels,
+        datasets: [{
+          data: barchar_data,
+          label: '# of Emmigrants from '+ name_prov_selected,
+          backgroundColor: "#008000",
+          borderColor: '#000000',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
         },
-        options: {
-          responsive: true,
-          scales: {
-            yAxes: [{
-                ticks: {
-                  beginAtZero: true
-                }
-            }]
-          }
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: '# emmigrants from '+ name_prov_selected
         }
+      }
     });
   } 
 }
 
 function update_barchar(numEmmigrants, name_destino) {
+  //if (name_destino == "Santa Cruz de Tenerife") {name_destino="Tenerife";}
   if (barchar_data.length > 2) {
     barchar_data.splice(1, 1, numEmmigrants);
     ylabels.splice(1, 1, name_destino);
