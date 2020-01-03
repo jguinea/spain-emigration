@@ -1,6 +1,5 @@
 //TODO
 //Beautify
-//Add button deselect all
 //legend barchar
 //Set rules for select
 //Tutorial
@@ -54,7 +53,7 @@ output.append("rect").attr("class","output")
 
 //Add text below the map //add g to the info div
 
-var ag1 = $("#info").width();
+const ag1 = $("#info").width();
 var ag2 = $("#info").height();
 
 output = d3.select("#info").append("svg")
@@ -426,8 +425,8 @@ function draw_legend(domain,type){
       .select(".domain").remove();
     //return xAxis;
 
-    gLegendWidth = $('g.legend').get(0).getBBox().width;
-    gLegendHeight = $('g.legend').get(0).getBBox().height;
+    var gLegendWidth = $('g.legend').get(0).getBBox().width;
+    var gLegendHeight = $('g.legend').get(0).getBBox().height;
 
     var positionX = svg1Width - gLegendWidth - 10300/svg1Height;
     var positionY = svg1Height - gLegendHeight - 10800/svg1Height;
@@ -525,8 +524,8 @@ function draw_legend(domain,type){
       .call(xAxis)
       .select(".domain").remove();
 
-    gLegendWidth = $('g.legend').get(0).getBBox().width;
-    gLegendHeight = $('g.legend').get(0).getBBox().height;
+    var gLegendWidth = $('g.legend').get(0).getBBox().width;
+    var gLegendHeight = $('g.legend').get(0).getBBox().height;
   
     var positionX = svg1Width - gLegendWidth - 10300/svg1Height;
     var positionY = svg1Height - gLegendHeight - 10800/svg1Height;
@@ -567,6 +566,8 @@ function resize(){
     .style("width",+svg1Width/3+"px")
     .style("height",+(25/269)*svg1Height+20650/269+"px")
     .style("top",+(86/273)*svg1Height+86.5+"px");
+
+    draw_legend_barchar();
 }
 
 
@@ -855,6 +856,8 @@ function draw_barchar(caso) {
     }
   } 
   if (caso=="comp") {
+    Chart.defaults.global.defaultFontFamily = 'Quattrocento Sans';
+    Chart.defaults.global.defaultFontSize = 15,
     id_province_select_ant = [];
     var ctx = $('#compChart');
     window.myBar = new Chart(ctx, {
@@ -863,7 +866,7 @@ function draw_barchar(caso) {
           labels: province_select,
           datasets: [{
             data: comp_data,
-            label: ["rural","intermidiate","urban"],
+            //label: ["rural","intermidiate","urban"],
             borderColor: '#000000',
             borderWidth: 1
           }]
@@ -879,7 +882,7 @@ function draw_barchar(caso) {
             }]
           },
           legend: {
-            display: true,
+            display: false,
           },
           title: {
             display: true,
@@ -887,6 +890,7 @@ function draw_barchar(caso) {
           }
         }
       });
+      draw_legend_barchar();
     }
   
 }
@@ -986,6 +990,58 @@ function update_barchar_comp(id_province_select) {
   }
 
   window.myBar.update();
+}
+
+function draw_legend_barchar() {
+  function get_legend_string(code){
+    switch(code){
+      case "PU":
+        return "Urban"
+      case "PR":
+        return "Rural"
+      case "IN":
+        return "Intermediate"
+    }
+  }
+  d3.select("#legend_barchar").select('svg').remove();
+  var sizeX=(4/453)*(window.width)+3.81;
+  var sizeY=(2/453)*(window.width)+5;
+  var g = d3.select("#legend_barchar")
+    .append("svg")
+    .append("g")
+    .attr("id","legend_char");
+
+  g.selectAll("mydots")
+    .data(rural_code)
+    .enter()
+    .append("rect")
+    .attr("x", 2)
+    .attr("y", function(d,i){ return i*(2.3*sizeY)+2}) 
+    .attr("width", sizeX)
+    .attr("height", sizeY)
+    .style("fill", function(d){ return catColors(d)})
+    .style("stroke",'#666');
+
+  g.selectAll("mylabels")
+    .data(rural_code)
+    .enter()
+    .append("text")
+    .attr("x", 8+sizeX)
+    .attr("y", function(d,i){ return i*(2.3*sizeY) + sizeY*1.2}) 
+    .style("fill", '#666')
+    .text(function(d){ return get_legend_string(d)})
+    .attr("text-anchor", "left")
+    .style("alignment-baseline", "middle");
+
+  if (window.width < 700) {
+    d3.select('#legend_char').style("font-size",12+"px");
+  }
+    
+  var gLegendWidth = $('g#legend_char').get(0).getBBox().width;
+  var gLegendHeight = $('g#legend_char').get(0).getBBox().height;
+  d3.select("#legend_barchar").select("svg")
+    .attr("width",gLegendWidth+5)
+    .attr("height",gLegendHeight+5);
 }
 
 // To style all selects

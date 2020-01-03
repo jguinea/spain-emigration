@@ -128,7 +128,7 @@ left: 2%;
 .custom-select2 {
   float: left;
   margin-left: 3%;
-  margin-right: 3%;
+  margin-right: 5%;
   margin-top: 7%;
   margin-bottom: 10%;
   width: 25%;
@@ -174,4 +174,13 @@ rect.output {
 
 .navbar-brand {
   height: 40px;
+}
+
+#legend_barchar {
+  float: left;
+  font-weight: 500;
+  font-size: 13.5px;
+  padding-left: 6px;
+  vertical-align: middle;
+  margin-top: 200px;
 }

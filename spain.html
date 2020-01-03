@@ -130,15 +130,15 @@
 </div>
 
 <div id="comp_tab"> 
-  <h2 class="title">Comparison</h2> 
+  <h2 class="title" style="font-weight: bold;">Comparison</h2> 
   <h4 class="subtitle">Choose up to 3 provinces to compare the variable desired</h6>
-    <div class="clearfix">
+  <div class="clearfix">
   <div class="custom-select2">
     <div>
       <button type="button" id="deselect" class="btn">Deselect All</button>
     </div>
     <div id="comp1">
-      <select id="province_select" class="selectpicker comp_select" multiple title='Choose a province' data-max-options="3" data-live-search="true">
+      <select id="province_select" class="selectpicker comp_select dropdown" data-dropup-auto="false" multiple title='Choose a province' data-max-options="3" data-live-search="true">
           <optgroup label="Urban" >
             <option data-tokens="urban" value="08">Barcelona</option>
             <option data-tokens="urban" value="20">Guipúzcoa</option>
@@ -159,7 +159,7 @@
             <option data-tokens="intermidiate" value="09">Burgos</option>
             <option data-tokens="intermidiate" value="11">Cádiz</option>
             <option data-tokens="intermidiate" value="39">Cantabria</option>
-            <option data-tokens="intermidiate" value="12">CastellÓn</option>
+            <option data-tokens="intermidiate" value="12">Castellón</option>
             <option data-tokens="intermidiate" value="14">Cordoba</option>
             <option data-tokens="intermidiate" value="15">A Coruña</option>
             <option data-tokens="intermidiate" value="17">Girona</option>
@@ -198,7 +198,7 @@
       </select>
     </div>
     <div id="comp2">
-      <select id="var_select" class="selectpicker comp_select">
+      <select id="var_select" class="selectpicker comp_select dropdown" data-dropup-auto="false">
         <option value="PresupuestosTot">Public spending</option>
         <option value="PresupuestosNorm">Public spending per capita</option>
         <option value="Agrario">Agriculture % of workforce</option>
@@ -216,10 +216,11 @@
         <option value="natalidad">Birth rate</option>
       </select>
     </div>
-    <!-- add button deselect all -->
   </div>
-  <div id="comp-container" style="width: 50%; height: 520px; float: right; margin-right: 10%;">
+  <div id="comp-container" style="width: 50%; height: 520px; float: left; margin-bottom: 5px;">
     <canvas id="compChart"></canvas>
+  </div>
+  <div id="legend_barchar">
   </div>
   </div>
 </div>
