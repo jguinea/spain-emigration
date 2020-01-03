@@ -66,8 +66,8 @@ path.active {
   /* font-size: 15px; */
 }
 
-.title {
-  font-family: 'Glegoo-Regular',sans-serif;
+.title, .subtitle {
+  font-family: 'Quattrocento Sans', sans-serif;
   margin-left: 10px;
 }
 
@@ -120,9 +120,28 @@ left: 2%;
   background-color:#4095c6;
 }*/
 
-#custom-select {
+.custom-select, .custom-select2 {
   font-family: 'Quattrocento Sans', sans-serif;
   margin-bottom: 5px;
+}
+
+.custom-select2 {
+  float: left;
+  margin-left: 3%;
+  margin-right: 3%;
+  margin-top: 7%;
+  margin-bottom: 10%;
+  width: 25%;
+}
+
+#comp1 {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+#comp2 {
+  margin-bottom: 50px;
+  margin-top: 50px;
 }
 
 text.output {

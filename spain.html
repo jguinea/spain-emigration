@@ -15,11 +15,11 @@
   <nav class="navbar navbar-default" style="margin-bottom: 10px;">
       <div class="container-fluid" style="font-weight: 600">
           <div class="navbar-header">
-            <a class="navbar-brand" href="#">Empty Spain</a>
+            <a class="navbar-brand" style="font-size: 20px;" href="#">Empty Spain</a>
           </div>
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#splom_tab">Splom</a></li>
-            <li><a href="#comp_tab">Variable Comparison</a></li>
+            <li class="active" style="font-size: 16px;"><a href="#splom_tab">Splom</a></li>
+            <li style="font-size: 16px;"><a href="#comp_tab">Variable Comparison</a></li>
           </ul>
       </div>
   </nav>
@@ -42,7 +42,7 @@
 
 <div id="splom_tab">  
   <div class="header">
-    <div id="custom-select">
+    <div class="custom-select">
       <select id="0splom" class="splom_select selectpicker col-sm-3">
         <option value="PresupuestosTot">Public spending</option>
         <option value="PresupuestosNorm">Public spending per capita</option>
@@ -129,69 +129,76 @@
   </div>
 </div>
 
-<div id="comp_tab"> <!-- //EN CONSTRUCCION -->
-  <h2 class="title">Comparison</h2>  
-  <div id="custom-select">
-      <select class="selectpicker col-sm-2" multiple data-max-options="3" data-live-search="true">
+<div id="comp_tab"> 
+  <h2 class="title">Comparison</h2> 
+  <h4 class="subtitle">Choose up to 3 provinces to compare the variable desired</h6>
+    <div class="clearfix">
+  <div class="custom-select2">
+    <div>
+      <button type="button" id="deselect" class="btn">Deselect All</button>
+    </div>
+    <div id="comp1">
+      <select id="province_select" class="selectpicker comp_select" multiple title='Choose a province' data-max-options="3" data-live-search="true">
           <optgroup label="Urban" >
-            <option data-tokens="urban" value="Barcelona">Barcelona</option>
-            <option data-tokens="urban" value="Guipuzcoa">Guipuzcoa</option>
-            <option data-tokens="urban" value="Madrid">Madrid</option>
-            <option data-tokens="urban" value="Malaga">Malaga</option>
-            <option data-tokens="urban" value="Sevilla">Sevilla</option>
-            <option data-tokens="urban" value="Valencia">Valencia</option>
-            <option data-tokens="urban" value="Vizcaya">Vizcaya</option>
-            <option data-tokens="urban" value="Zaragoza">Zaragoza</option>
+            <option data-tokens="urban" value="08">Barcelona</option>
+            <option data-tokens="urban" value="20">Guipúzcoa</option>
+            <option data-tokens="urban" value="28">Madrid</option>
+            <option data-tokens="urban" value="29">Málaga</option>
+            <option data-tokens="urban" value="41">Sevilla</option>
+            <option data-tokens="urban" value="46">Valencia</option>
+            <option data-tokens="urban" value="48">Vizcaya</option>
+            <option data-tokens="urban" value="50">Zaragoza</option>
           </optgroup>
           <optgroup label="Intermidiate">
-            <option data-tokens="intermidiate" value="Alava">Álava</option>
-            <option data-tokens="intermidiate" value="Alicante">Alicante</option>
-            <option data-tokens="intermidiate" value="Almeria">Almeria</option>
-            <option data-tokens="intermidiate" value="Asturias">Asturias</option>
-            <option data-tokens="intermidiate" value="Avila">Avila</option>
-            <option data-tokens="intermidiate" value="Islas Baleares">Islas Baleares</option>
-            <option data-tokens="intermidiate" value="Burgos">Burgos</option>
-            <option data-tokens="intermidiate" value="Cadiz">Cadiz</option>
-            <option data-tokens="intermidiate" value="Cantabria">Cantabria</option>
-            <option data-tokens="intermidiate" value="Castellon">Castellon</option>
-            <option data-tokens="intermidiate" value="Cordoba">Cordoba</option>
-            <option data-tokens="intermidiate" value="A Coruña">A Coruña</option>
-            <option data-tokens="intermidiate" value="Girona">Girona</option>
-            <option data-tokens="intermidiate" value="Granada">Granada</option>
-            <option data-tokens="intermidiate" value="Huelva">Huelva</option>
-            <option data-tokens="intermidiate" value="Leon">Leon</option>
-            <option data-tokens="intermidiate" value="La Rioja">La Rioja</option>
-            <option data-tokens="intermidiate" value="Murcia">Murcia</option>
-            <option data-tokens="intermidiate" value="Navarra">Navarra</option>
-            <option data-tokens="intermidiate" value="Palencia">Palencia</option>
-            <option data-tokens="intermidiate" value="Las Palmas">Las Palmas</option>
-            <option data-tokens="intermidiate" value="Pontevedra">Pontevedra</option>
-            <option data-tokens="intermidiate" value="Salamanca">Salamanca</option>
-            <option data-tokens="intermidiate" value="Santa Cruz de Tenerife" title="Tenerife">Santa Cruz de Tenerife</option>
-            <option data-tokens="intermidiate" value="Tarragona">Tarragona</option>
-            <option data-tokens="intermidiate" value="Valladolid">Valladolid</option>
+            <option data-tokens="intermidiate" value="01">Álava</option>
+            <option data-tokens="intermidiate" value="03">Alicante</option>
+            <option data-tokens="intermidiate" value="04">Almeria</option>
+            <option data-tokens="intermidiate" value="33">Asturias</option>
+            <option data-tokens="intermidiate" value="05">Ávila</option>
+            <option data-tokens="intermidiate" title="Baleares" value="07">Islas Baleares</option>
+            <option data-tokens="intermidiate" value="09">Burgos</option>
+            <option data-tokens="intermidiate" value="11">Cádiz</option>
+            <option data-tokens="intermidiate" value="39">Cantabria</option>
+            <option data-tokens="intermidiate" value="12">CastellÓn</option>
+            <option data-tokens="intermidiate" value="14">Cordoba</option>
+            <option data-tokens="intermidiate" value="15">A Coruña</option>
+            <option data-tokens="intermidiate" value="17">Girona</option>
+            <option data-tokens="intermidiate" value="18">Granada</option>
+            <option data-tokens="intermidiate" value="21">Huelva</option>
+            <option data-tokens="intermidiate" value="24">León</option>
+            <option data-tokens="intermidiate" value="26">La Rioja</option>
+            <option data-tokens="intermidiate" value="30">Murcia</option>
+            <option data-tokens="intermidiate" value="31">Navarra</option>
+            <option data-tokens="intermidiate" value="34">Palencia</option>
+            <option data-tokens="intermidiate" value="35">Las Palmas</option>
+            <option data-tokens="intermidiate" value="36">Pontevedra</option>
+            <option data-tokens="intermidiate" value="37">Salamanca</option>
+            <option data-tokens="intermidiate" value="38" title="Tenerife">Santa Cruz de Tenerife</option>
+            <option data-tokens="intermidiate" value="43">Tarragona</option>
+            <option data-tokens="intermidiate" value="47">Valladolid</option>
           </optgroup>
           <optgroup label="Rural" data-tokens="rural">
-            <option data-tokens="rural" value="Albacete">Albacete</option>
-            <option data-tokens="rural"value="Badajoz">Badajoz</option>
-            <option data-tokens="rural" value="Caceres">Caceres</option>
-            <option data-tokens="rural" value="Ciudad Real">Ciudad Real</option>
-            <option data-tokens="rural" value="Cuenca">Cuenca</option>
-            <option data-tokens="rural" value="Guadalajara">Guadalajara</option>
-            <option data-tokens="rural" value="Huesca">Huesca</option>
-            <option data-tokens="rural" value="Jaen">Jaen</option>
-            <option data-tokens="rural" value="LLeida">LLeida</option>
-            <option data-tokens="rural" value="Lugo">Lugo</option>
-            <option data-tokens="rural" value="Ourense">Ourense</option>
-            <option data-tokens="rural" value="Segovia">Segovia</option>
-            <option data-tokens="rural" value="Soria">Soria</option>
-            <option data-tokens="rural" value="Teruel">Teruel</option>
-            <option data-tokens="rural" value="Toledo">Toledo</option>
-            <option data-tokens="rural" value="Zamora">Zamora</option>
+            <option data-tokens="rural" value="2">Albacete</option>
+            <option data-tokens="rural"value="6">Badajoz</option>
+            <option data-tokens="rural" value="10">Cáceres</option>
+            <option data-tokens="rural" value="13">Ciudad Real</option>
+            <option data-tokens="rural" value="16">Cuenca</option>
+            <option data-tokens="rural" value="19">Guadalajara</option>
+            <option data-tokens="rural" value="22">Huesca</option>
+            <option data-tokens="rural" value="23">Jaén</option>
+            <option data-tokens="rural" value="25">LLeida</option>
+            <option data-tokens="rural" value="27">Lugo</option>
+            <option data-tokens="rural" value="32">Ourense</option>
+            <option data-tokens="rural" value="40">Segovia</option>
+            <option data-tokens="rural" value="42">Soria</option>
+            <option data-tokens="rural" value="44">Teruel</option>
+            <option data-tokens="rural" value="45">Toledo</option>
+            <option data-tokens="rural" value="49">Zamora</option>
           </optgroup>
       </select>
-          
-      <select class="selectpicker col-sm-2">
+    </div>
+    <div id="comp2">
+      <select id="var_select" class="selectpicker comp_select">
         <option value="PresupuestosTot">Public spending</option>
         <option value="PresupuestosNorm">Public spending per capita</option>
         <option value="Agrario">Agriculture % of workforce</option>
@@ -208,9 +215,12 @@
         <option value="imdnorm">R&D businesses normalized</option>
         <option value="natalidad">Birth rate</option>
       </select>
+    </div>
+    <!-- add button deselect all -->
   </div>
-  <div id="comp-container">
+  <div id="comp-container" style="width: 50%; height: 520px; float: right; margin-right: 10%;">
     <canvas id="compChart"></canvas>
+  </div>
   </div>
 </div>
 

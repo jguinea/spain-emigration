@@ -1,5 +1,7 @@
 //TODO
 //Beautify
+//Add button deselect all
+//legend barchar
 //Set rules for select
 //Tutorial
 //Language Select
@@ -89,7 +91,11 @@ var selected_provinces=[]
 var selected_id = 28;
 var semestre= "total";
 var domain = get_domain(selected_id);
-var columns =["Agrario","Paro","PIB","PresupuestosNorm"]
+var columns =["Agrario","Paro","PIB","PresupuestosNorm"];
+var province_select = [];
+var comp = "Agrario";
+var comp_data = []; 
+var barColor = [];
 
 
 //Escalas de colores
@@ -110,6 +116,7 @@ draw_map();
 button_listner();
 draw_splom(splom_size,splom_padding);
 uncheck();
+draw_barchar("comp");
 
 
 
@@ -316,7 +323,7 @@ function update_map(){
   $(".legend").remove(); 
   $("#myGradient").remove();
   draw_legend(domain,type);
-  draw_barchar(barchar_data, ylabels);
+  draw_barchar("splom");
 }
 
 
@@ -359,11 +366,19 @@ function button_listner(){
 
     }
     var column = this.id[0]
-    var value = this.value
+    var value = this.value; 
     columns[column]=value
     update_splom(splom_size,splom_padding)
     
   })
+  $("#var_select").on('change', function(){
+    comp = $(this).val(); console.log(comp);
+    update_barchar_comp(id_province_select_ant);
+  })
+  $('#province_select').on('change',function() {
+    var id_province_select = $(this).val(); console.log(id_province_select);
+    update_barchar_comp(id_province_select);
+  });
 }
 
 
@@ -565,6 +580,9 @@ function uncheck(){
   $("#1splom").val('Paro');
   $("#2splom").val('PIB');
   $("#3splom").val('PresupuestosNorm');
+
+  $("#var_select").val('Agrario');
+  $("#province_select").val([""]);
 }
 
 
@@ -790,50 +808,87 @@ function update_splom(size, padding){
   draw_splom(size,padding);
 }
 
-function draw_barchar() {
-  $(".chartjs-size-monitor").remove();
-  $("canvas").remove();
-  var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
-  if (type=="flow") {
-    d3.select("#chart-container")
-      .style("width",+svg1Width/3+"px")
-      .style("height",+(25/269)*svg1Height+20650/269+"px")
-      .style("top",+(86/273)*svg1Height+86.5+"px")
-      .append("canvas")
-      .attr("id","myChart");
-    var ctx = $('#myChart');
-    window.myHorizontalBar = new Chart(ctx, {
-      type: 'horizontalBar',
-      data: {
-        labels: ylabels,
-        datasets: [{
-          data: barchar_data,
-          label: '# of Emmigrants from '+ name_prov_selected,
-          backgroundColor: "#008000",
-          borderColor: '#000000',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
+function draw_barchar(caso) {
+  if (caso=="splom") {
+    d3.select("#chart-container").selectAll(".chartjs-size-monitor").remove();
+    d3.select("#chart-container").select("canvas").remove();
+    var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
+    if (type=="flow") {
+      d3.select("#chart-container")
+        .style("width",+svg1Width/3+"px")
+        .style("height",+(25/269)*svg1Height+20650/269+"px")
+        .style("top",+(86/273)*svg1Height+86.5+"px")
+        .append("canvas")
+        .attr("id","myChart");
+      var ctx = $('#myChart');
+      window.myHorizontalBar = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: {
+          labels: ylabels,
+          datasets: [{
+            data: barchar_data,
+            label: '# of Emmigrants from '+ name_prov_selected,
+            backgroundColor: "#008000",
+            borderColor: '#000000',
+            borderWidth: 1
           }]
         },
-        legend: {
-          display: false
-        },
-        title: {
-          display: true,
-          text: '# emmigrants from '+ name_prov_selected
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          },
+          legend: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: '# emmigrants from '+ name_prov_selected
+          }
         }
-      }
-    });
+      });
+    }
   } 
+  if (caso=="comp") {
+    id_province_select_ant = [];
+    var ctx = $('#compChart');
+    window.myBar = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: province_select,
+          datasets: [{
+            data: comp_data,
+            label: ["rural","intermidiate","urban"],
+            borderColor: '#000000',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          },
+          legend: {
+            display: true,
+          },
+          title: {
+            display: true,
+            text: "Agriculture workers (%)",
+          }
+        }
+      });
+    }
+  
 }
 
 function update_barchar(numEmmigrants, name_destino) {
@@ -849,8 +904,102 @@ function update_barchar(numEmmigrants, name_destino) {
   window.myHorizontalBar.update();
 }
 
+function update_barchar_comp(id_province_select) {
+  var long = id_province_select.length;
+  var long_ant = id_province_select_ant.length;
+
+  if (JSON.stringify(id_province_select)==JSON.stringify(id_province_select_ant)) { //no han cambiado las provincias
+    comp_data.splice(0,comp_data.length); //IT WORKS
+    for (var i=0; i<long; i++) {
+      var cod = id_province_select[i];
+      var value = splom_data.find(element => element["Codigo"]==cod)[comp];
+      comp_data.push(value);
+    }
+    function get_name(comp) {
+      switch(comp){
+        case "Agrario":
+          return "Agriculture workers (%)"
+        case "Paro":
+          return "Unemployment rate (%)"
+        case "PIB":
+          return "GDP per capita (€)"
+        case "PresupuestosNorm":
+          return "Investment p.c. (€)"
+        case "PresupuestosTot":
+          return "Public spending"
+        case "Poblacion":
+          return "Population"
+        case "net":
+          return "Net migration"
+        case "netnorm":
+          return "Net migration normalized"
+        case "Doctores18":
+          return "# Doctors"
+        case "Flow":
+          return "Migration Flow"
+        case "quiebras":
+          return "Banckrupcies"
+        case "quiebraspc":
+          return "Banckrupcies normalized"
+        case "imd":
+          return "R&D businesses"
+        case "imdnorm":
+          return "R&D businesses normalized"
+        case "natalidad":
+          return "Birthrate"
+      }
+    }
+    window.myBar.options.title.text = get_name(comp);
+  }
+  else { //han cambiado las provincias
+    var npi = long - id_province_select_ant.length; // +1 añadir, -1 quitar
+    if (npi == 1) {
+      for (var i=0; i<long; i++) {
+        if (id_province_select[i] != id_province_select_ant[i]) {
+          var cod = id_province_select[i];
+          var nameProv = splom_data.find(element => element["Codigo"]==cod)["Provincia"];
+          var value = splom_data.find(element => element["Codigo"]==cod)[comp];
+          var rural=splom_data.find(element => element["Codigo"]==cod)["Ruralidad"]
+          province_select.splice(i,0,nameProv);
+          comp_data.splice(i,0,value);
+          barColor.splice(i,0,catColors(rural));
+          break;
+        }
+      }
+    }
+    else if ((npi == -1)){
+      for (var i=0; i<long_ant; i++) {
+        if (id_province_select[i] != id_province_select_ant[i]) {
+          province_select.splice(i,1);
+          comp_data.splice(i,1);
+          barColor.splice(i,1);
+          break;
+        }
+      }
+    }
+    else {
+      province_select.splice(0,province_select.length);
+      comp_data.splice(0,comp_data.length);
+    }
+  id_province_select_ant = id_province_select;
+  window.myBar.data.datasets[0].backgroundColor = barColor;
+  }
+
+  window.myBar.update();
+}
+
 // To style all selects
-$('.selectpicker').selectpicker({
-  style: 'btn-dark',
+$('.splom_select').selectpicker({
   width: '19%'
+});
+
+$('.comp_select').selectpicker({
+  width: '100%'
+});
+
+document.getElementById('deselect').addEventListener('click', function () {
+  $("#province_select").val([""]);
+  $('#province_select').selectpicker('deselectAll');
+  var id_province_select = [];
+  update_barchar_comp(id_province_select);
 });
