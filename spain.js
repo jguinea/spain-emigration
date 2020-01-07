@@ -38,7 +38,7 @@ var projection = d3.geoConicConformalSpain();
 var path = d3.geoPath().projection(projection);
 
 //Projection size
-var scale = height/0.188;
+var scale = height/0.2;
 projection.scale(scale)
   .translate([width / 3.4, height / 2]);
 
