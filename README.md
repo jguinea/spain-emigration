@@ -1,5 +1,5 @@
 # Spain Emigration
-What are the factors influencing the demographic movements inside Spain? [This visualization](https://jguinea.github.io/spain-emigration/spain.html) tries to answer this question by allowing the user to interact with a scatter plot matrix (SPLOM) linked to a map of Spain.
+What are the factors influencing the demographic movements inside Spain? [This visualization](https://jguinea.github.io/spain-emigration/spain.html) tries to answer this question by allowing the user to interact with a scatter plot matrix (SPLOM) linked to a map of Spain, and a bar chart that shows the inequality of some relevant factors between different areas.
 
 ### Built with
 * [D3](https://github.com/d3/d3) - The visualization library.
