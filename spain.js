@@ -1,5 +1,18 @@
-/*
+/* ### Spain Emigration
+What are the factors influencing the demographic movements inside Spain? This visualization 
+tries to answer this question, allowing the user to interact with a scatter plot matrix (SPLOM) 
+linked to a map of Spain, and a bar chart that shows the inequality of some relevant factors 
+between different areas.
 
+### Built with
+* [D3](https://github.com/d3/d3) - The visualization library.
+* [GeoJson](https://github.com/geojson) - Map data structure.
+* [SPLOM template](https://github.com/Louise777/BrushableScatterplotMatrix-d3) - Credit to Louise777 for bulding a D3v4 scatterplot matrix.
+* [Chart.js](https://github.com/chartjs/Chart.js) - Bar Chart library.
+* [Tutorial template](https://codepen.io/jebbles/pen/MKoYya) - Tutorial. Credit to Jeff Ham for building a set of walkthrough screens.
+
+A project for Data Visualization IN4086 at TU Delft done by Blanca Guillén, Javier Guinea and Maite Ruiz.
+All code not specified above is own code.
 */
 
 var viewWidth = window.innerWidth;
@@ -40,36 +53,36 @@ var svg1Height = $("#svg1").height();
 var ag1 = $("#info").width();
 var ag2 = $("#info").height();
 
-output = d3.select("#info").append("svg")
-  .attr("width",ag1)
-  .attr("height",50)
-  .append("g");
+  output = d3.select("#info").append("svg")
+    .attr("width",ag1)
+    .attr("height",50)
+    .append("g");
 
-output.append("rect").attr("class","output")
-  .attr("x","0")
-  .attr("y",padding_output)
-  .attr("width","75%")
-  .attr("height","50");
+  output.append("rect").attr("class","output")
+    .attr("x","0")
+    .attr("y",padding_output)
+    .attr("width","75%")
+    .attr("height","50");
 
-output.append("text").attr("class","output")
-  .attr("id","where")
-  .attr("y",padding_output+18)
-  .attr("x","10");
+  output.append("text").attr("class","output")
+    .attr("id","where")
+    .attr("y",padding_output+18)
+    .attr("x","10");
 
-output.append("text").attr("class","output")
-  .attr("id","who")
-  .attr("y",padding_output+40)
-  .attr("x","10");  
+  output.append("text").attr("class","output")
+    .attr("id","who")
+    .attr("y",padding_output+40)
+    .attr("x","10");  
 
 //Store geometry info
 provincias = geodata
 
-
+//Initialize variables
 const rural_code=["PU","PR","IN"];
 var type = "white";
 var selecting = false;
 var selected_provinces=[];
-var selected_id = 28;
+var selected_id = 28; //Madrid
 var semestre= "total";
 var domain = get_domain(selected_id);
 var columns =["Agrario","Paro","PIB","PresupuestosNorm"];
@@ -79,13 +92,17 @@ var comp_data = [];
 var barColor = [];
 
 //Color scales for each map mode
+  //Migration Flow
 var linColor = d3.scaleLinear()
   .domain(domain)
   .range(["#e6ffe6","#008000"]);
+
+  //Urbanization
 var catColors = d3.scaleOrdinal()
   .domain(rural_code)
   .range(d3.schemeCategory10);
 
+  //Net Migration
 extent_net = d3.extent(splom_data, d => d.net)
 var scaleColor = d3.scaleLinear()
   .domain([extent_net[0], 0, extent_net[1]])
@@ -96,23 +113,22 @@ draw_map();
 button_listner();
 draw_splom(splom_size,splom_padding);
 uncheck();
-draw_barchar("comp");
+draw_barchart("comp");
 
 
 
 //MAPS
-
 function draw_map(){
     svg.selectAll("type")
     .data(provincias.features)
-    // features es la lista de provincias
+    // features is the provinces list
     .enter().append("path")
     .attr("d", path)
     .attr("class","map")
     .style("fill", "white");
 }
 
-//Describes all the possible interactions with the map and updates it upon the occurrence of an event.
+//Describe all the possible interactions with the map and updates it upon the occurrence of an event.
 function update_map(){
 
   //Information to show and variables to calculate before any event takes place
@@ -151,29 +167,32 @@ function update_map(){
     $("#where").text(name_prov_selected +" is " + rural_text + ".");
   }
 
-  //describes, for each map mode, how to style the map and what to show when an event occurs
+  //Describe, for each map mode, how to style the map and what happens when an event occurs
   svg.selectAll("path")
     .data(provincias.features)
+    //CLICK
     .on("click",function(d){
-      selected_id=d["properties"]["cod_prov"]
-      update_map()
-      update_splom(splom_size,splom_padding)
+      //Update the map with the new selected origin province 
+      selected_id=d["properties"]["cod_prov"];
+      update_map();
+      update_splom(splom_size,splom_padding);
       if (type =="flow") {
         var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
         total = get_total(selected_id);
         $("#where").text("People from " +name_prov_selected+" moving away: "+ total);
       }
     })
+    //HOVER
     .on("mouseover",function(d) {
       if (type =="flow"){
         var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
-        var name_destino = d["properties"]["name"] 
-        var province_id =  d["properties"]["cod_prov"]
-        var numEmigrants = splom_data.find(element => element["Codigo"]==selected_id)[province_id]
+        var name_destino = d["properties"]["name"]; 
+        var province_id =  d["properties"]["cod_prov"];
+        var numEmigrants = splom_data.find(element => element["Codigo"]==selected_id)[province_id];
         d3.select(this)
-          .style("fill","#222831")
-          $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmigrants);
-        update_barchar(numEmigrants, name_destino);
+          .style("fill","#222831");
+        $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmigrants);
+        update_barchart(numEmigrants, name_destino);
       }
       if (type=="net"){
         try {
@@ -184,7 +203,7 @@ function update_map(){
         }
         d3.select(this)
           .style("fill","#222831");
-        $("#where").text("net "+name_province+" = "+value)
+        $("#where").text("net "+name_province+" = "+value);
       }
       if (type=="urbanizacion"){
         var province_id = d["properties"]["cod_prov"];
@@ -211,6 +230,7 @@ function update_map(){
           $("#where").text(name_hover +" is " + rural_text + ".");
       }
     })
+    //MOUSE OUT
     .on("mouseout",function(d){
       if (type == "flow"){
         var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
@@ -241,7 +261,7 @@ function update_map(){
               console.error(d["properties"]["cod_prov"]);
               console.log(error)
             }
-            var province_id = d["properties"]["cod_prov"]
+            var province_id = d["properties"]["cod_prov"];
             if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
               return "white";
             return catColors(rural)
@@ -255,7 +275,7 @@ function update_map(){
               value = splom_data.find(element => element["Codigo"]==num_prov)["net"];
             } catch (error) {
             }
-            var province_id = d["properties"]["cod_prov"]
+            var province_id = d["properties"]["cod_prov"];
             if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
               return "white";
             return scaleColor(value)
@@ -263,6 +283,7 @@ function update_map(){
       } 
     })
     .transition()
+    //Define the color of each province, according to the color scales previously defined
     .style("fill", function(d){
       var province_id =  d["properties"]["cod_prov"];
       if (type=="urbanizacion"){
@@ -278,9 +299,9 @@ function update_map(){
       }
       if(type=="flow"){
         if (province_id==selected_id)
-          return "black"
+          return "black";
         if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
-          return "white"
+          return "white";
         if (province_id <51){
           return linColor(splom_data.find(element => element["Codigo"]==selected_id)[province_id])
         }
@@ -302,11 +323,11 @@ function update_map(){
   draw_legend(domain,type);
 
   //Draw bar chart if 'Migration Flow' mode is selected
-  draw_barchar("splom");
+  draw_barchart("splom");
 }
 
 
-//Returns the max and min value of people emigrating from the specified province
+//Return the max and min value of people emigrating from the specified province
 function get_domain(procedencia){
   arr = [];
   for(i=1;i<51;i++){
@@ -316,7 +337,7 @@ function get_domain(procedencia){
   return d3.extent(arr)
 }
 
-//Returns the overall amount of people emigrating from the specified province
+//Return the overall amount of people emigrating from the specified province
 function get_total(selected_id){
   var province = splom_data.find(element => element["Codigo"]==selected_id)
   var total = 0;
@@ -326,7 +347,7 @@ function get_total(selected_id){
   return total
 }
 
-//Function to retrieve the value of the buttons
+//Retrieve the value of the buttons when an event occurs
 function button_listner(){
 
   //Map mode selection
@@ -349,22 +370,22 @@ function button_listner(){
   //Bar chart variable comparison selection
   $("#var_select").on('change', function(){
     comp = $(this).val(); 
-    update_barchar_comp(id_province_select_ant);
+    update_barchart_comp(id_province_select_ant);
   })
 
   //Bar chart provinces selection
   $('#province_select').on('change',function() {
     var id_province_select = $(this).val(); console.log(comp);
-    update_barchar_comp(id_province_select);
+    update_barchart_comp(id_province_select);
   });
 }
 
-//Draws the legend for each map mode and province selected
+//Draws the legend for each map mode
 function draw_legend(domain,type){
   
+  //On 'Migration Flow' mode, legend changes for every province
   if (type=="flow") {
-    var range_third = domain;
-  
+    var range_third = domain; 
     var legend_data = [{"color":"#e6ffe6","value":range_third[0]},{"color":"#008000","value":range_third[1]}];
     var extent = d3.extent(legend_data, d => d.value);
    
@@ -409,6 +430,7 @@ function draw_legend(domain,type){
     return xAxis;
   }
 
+  //On 'Urbanization' mode, legend does not change when a province is selected (always the same data)
   if (type == "urbanizacion"){
     function get_legend_string(code){
       switch(code){
@@ -453,6 +475,7 @@ function draw_legend(domain,type){
     g.attr("transform", "translate("+positionX+","+positionY+")");
   }
 
+  //On 'Net Migration' mode, legend does not change when a province is selected (always the same data)
   if (type == "net"){
     var range_third = scaleColor.domain();
   
@@ -503,7 +526,7 @@ function draw_legend(domain,type){
   } 
 }
 
-
+//Define how to resize elements when a window resize occurs
 function resize(){
 
   viewWidth = $(window).innerWidth();
@@ -514,11 +537,12 @@ function resize(){
   padding_legend = height/20;
   legend_height = width/180;
   legend_width = height/2.2;
-  splom_size = height/4
-  splom_padding = height/20
+  splom_size = height/4;
+  splom_padding = height/20;
   $(".legend").remove(); 
   $("#myGradient").remove();
   scale = height/0.2 ;
+
   projection.scale(scale)
     .translate([width / 3.3, height / 2]);
 
@@ -530,17 +554,19 @@ function resize(){
   d3.select('#info').select('svg')
     .attr("width",ag1);
   draw_legend(domain,type);
+
   d3.selectAll("path").attr('d', path);
   update_splom(splom_size,splom_padding);
+
   d3.select("#chart-container")
     .style("width",+svg1Width/3+"px")
     .style("height",+(25/269)*svg1Height+20650/269+"px")
     .style("top",+(86/273)*svg1Height+86.5+"px");
 
-  draw_legend_barchar();
+  draw_legend_barchart();
 }
 
-
+//Initialize buttons
 function uncheck(){
   var checkboxes = $(".selection");
   for (var i=0; i<checkboxes.length; i++)  {
@@ -556,7 +582,7 @@ function uncheck(){
   $("#province_select").val([""]);
 }
 
-
+//Draw splom chart
 function draw_splom(size, padding){
 
   var data=splom_data;
@@ -682,10 +708,6 @@ function draw_splom(size, padding){
             return "Net migration normalized"
           case "Doctores18":
             return "# Doctors"
-          case "quiebras":
-            return "Banckrupcies"
-          case "quiebraspc":
-            return "Banckrupcies normalized"
           case "imd":
             return "R&D businesses"
           case "imdnorm":
@@ -756,12 +778,16 @@ function draw_splom(size, padding){
   }
 }
 
+//Update splom chart
 function update_splom(size, padding){
   $("#splom").remove();
   draw_splom(size,padding);
 }
 
-function draw_barchar(caso) {
+//Draw the barchart for the 'Migration Flow' mode and for variable comparison
+function draw_barchart(caso) {
+
+  //'Migration Flow' mode
   if (caso=="splom") {
     d3.select("#chart-container").selectAll(".chartjs-size-monitor").remove();
     d3.select("#chart-container").select("canvas").remove();
@@ -807,6 +833,8 @@ function draw_barchar(caso) {
       });
     }
   } 
+
+  //Variable comparison
   if (caso=="comp") {
     Chart.defaults.global.defaultFontFamily = 'Quattrocento Sans';
     Chart.defaults.global.defaultFontSize = 15,
@@ -842,12 +870,14 @@ function draw_barchar(caso) {
           }
         }
       });
-      draw_legend_barchar();
+      draw_legend_barchart();
     }
   
 }
 
-function update_barchar(numEmigrants, name_destino) {
+//Calculate updated data arrays to update the bar chart showed in 'Migration Mode' mode
+//This function is called when the mouse is over the provinces
+function update_barchart(numEmigrants, name_destino) {
   if (barchar_data.length > 2) {
     barchar_data.splice(1, 1, numEmigrants);
     ylabels.splice(1, 1, name_destino);
@@ -859,8 +889,8 @@ function update_barchar(numEmigrants, name_destino) {
   window.myHorizontalBar.update();
 }
 
-//Update bar chart
-function update_barchar_comp(id_province_select) {
+//Update variable comparison bar chart
+function update_barchart_comp(id_province_select) {
   var long = id_province_select.length;
   var long_ant = id_province_select_ant.length;
 
@@ -892,10 +922,6 @@ function update_barchar_comp(id_province_select) {
           return "Net migration normalized"
         case "Doctores18":
           return "# Doctors"
-        case "quiebras":
-          return "Banckrupcies"
-        case "quiebraspc":
-          return "Banckrupcies normalized"
         case "imd":
           return "R&D businesses"
         case "imdnorm":
@@ -944,7 +970,8 @@ function update_barchar_comp(id_province_select) {
   window.myBar.update();
 }
 
-function draw_legend_barchar() {
+//Draw variable comparison bar chart legend
+function draw_legend_barchart() {
   function get_legend_string(code){
     switch(code){
       case "PU":
@@ -996,7 +1023,7 @@ function draw_legend_barchar() {
     .attr("height",gLegendHeight+5);
 }
 
-// To style all selects
+// To style selects
 $('.splom_select').selectpicker({
   width: '19%'
 });
@@ -1005,9 +1032,10 @@ $('.comp_select').selectpicker({
   width: '100%'
 });
 
+//Deselect all provinces
 document.getElementById('deselect').addEventListener('click', function () {
   $("#province_select").val([""]);
   $('#province_select').selectpicker('deselectAll');
   var id_province_select = [];
-  update_barchar_comp(id_province_select);
+  update_barchart_comp(id_province_select);
 });
