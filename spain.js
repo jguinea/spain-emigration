@@ -1,14 +1,9 @@
-//TODO
-//Beautify
-//legend barchar
-//Set rules for select
-//Tutorial
-//Language Select
-//Fix update splom
+/*
+
+*/
 
 var viewWidth = window.innerWidth;
 var viewHeight = window.innerHeight;
-
 var margin = {top: 60, right: 20, bottom: 60, left: 40};
 var width = viewWidth - margin.left - margin.right;
 var height = viewHeight - margin.top - margin.bottom;
@@ -16,19 +11,19 @@ var mapdiv_width= $("#svg_map").width();
 var padding_legend = height/20;
 var legend_height = width/180;
 var legend_width = height/2.2;
-var splom_size = height/4
+var splom_size = height/4;
 var splom_padding = height/20;
-var padding_output = 0; //150
+var padding_output = 0;
 d3.select(window).on('resize', resize); //zoom
 
 
 
-//Esta es la proyeccion sobre la que se coloca la geometría del mapa
+//Map projection
 var projection = d3.geoConicConformalSpain();
-// Añadir la proyección al path
+// Add projection to path
 var path = d3.geoPath().projection(projection);
 
-//tamaño de la proyeccion
+//Projection size
 var scale = height/0.188;
 projection.scale(scale)
   .translate([width / 3.4, height / 2]);
@@ -41,19 +36,8 @@ var svg = d3.select("#svg_map").append("svg")
 var svg1Width = $("#svg1").width();
 var svg1Height = $("#svg1").height();
 
-////ADD TEXT LEFT TO THE MAP  //add g to the map svg
-
-/*output = svg.append("g"); 
-
-output.append("rect").attr("class","output")
-  .attr("x","5")
-  .attr("y",padding_output)
-  .attr("width","290")
-  .attr("height","50") */
-
-//Add text below the map //add g to the info div
-
-const ag1 = $("#info").width();
+//Add text box below the map
+var ag1 = $("#info").width();
 var ag2 = $("#info").height();
 
 output = d3.select("#info").append("svg")
@@ -64,7 +48,7 @@ output = d3.select("#info").append("svg")
 output.append("rect").attr("class","output")
   .attr("x","0")
   .attr("y",padding_output)
-  .attr("width","420")
+  .attr("width","75%")
   .attr("height","50");
 
 output.append("text").attr("class","output")
@@ -77,27 +61,24 @@ output.append("text").attr("class","output")
   .attr("y",padding_output+40)
   .attr("x","10");  
 
-//Guardar info de geometría
+//Store geometry info
 provincias = geodata
 
 
-const rural_code=["PU","PR","IN"]
-var type = "white"
-var flow_splom = false
-var flow_splom_column = 0
-var selecting = false
-var selected_provinces=[]
+const rural_code=["PU","PR","IN"];
+var type = "white";
+var selecting = false;
+var selected_provinces=[];
 var selected_id = 28;
 var semestre= "total";
 var domain = get_domain(selected_id);
 var columns =["Agrario","Paro","PIB","PresupuestosNorm"];
 var province_select = [];
-var comp = "Agrario";
+var comp = "";
 var comp_data = []; 
 var barColor = [];
 
-
-//Escalas de colores
+//Color scales for each map mode
 var linColor = d3.scaleLinear()
   .domain(domain)
   .range(["#e6ffe6","#008000"]);
@@ -110,7 +91,7 @@ var scaleColor = d3.scaleLinear()
   .domain([extent_net[0], 0, extent_net[1]])
   .range(["blue", "white", "red"]);
 
-//Dibujarlo todo
+//Draw everything
 draw_map();
 button_listner();
 draw_splom(splom_size,splom_padding);
@@ -129,17 +110,18 @@ function draw_map(){
     .attr("d", path)
     .attr("class","map")
     .style("fill", "white");
-  
 }
 
-
+//Describes all the possible interactions with the map and updates it upon the occurrence of an event.
 function update_map(){
+
+  //Information to show and variables to calculate before any event takes place
   var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
   $("#who").text("");
   domain = get_domain(selected_id);
   for(i=1;i<51;i++){
     value = splom_data.find(element => element["Codigo"]==selected_id)[i];
-    if (value == domain [0]) { label_min = nombres_provincias.find(element => element["id"] == i)["nm"];}
+    if (value == domain [0]) label_min = nombres_provincias.find(element => element["id"] == i)["nm"];
     if (value == domain [1]) label_max = nombres_provincias.find(element => element["id"] == i)["nm"];
   }
   ylabels = [label_min, label_max];
@@ -168,219 +150,216 @@ function update_map(){
     }
     $("#where").text(name_prov_selected +" is " + rural_text + ".");
   }
+
+  //describes, for each map mode, how to style the map and what to show when an event occurs
   svg.selectAll("path")
-  .data(provincias.features)
-  .on("click",function(d){
-    selected_id=d["properties"]["cod_prov"]
-    update_map()
-    update_splom(splom_size,splom_padding)
-    if (type =="flow") {
-      var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
-      total = get_total(selected_id);
-      $("#where").text("People from " +name_prov_selected+" moving away: "+ total);
-    }
-  })
-  .on("mouseover",function(d) {
-    if (type =="flow"){
-      var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
-      var name_destino = d["properties"]["name"] 
-      var province_id =  d["properties"]["cod_prov"]
-      var numEmmigrants = splom_data.find(element => element["Codigo"]==selected_id)[province_id]
-      d3.select(this)
-        .style("fill","#222831")
-        $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmmigrants);
-      update_barchar(numEmmigrants, name_destino);
-    }
-    if (type=="net"){
-      try {
-        num_prov= d["properties"]["cod_prov"];
-        name_province= d["properties"]["name"];
-        value = splom_data.find(element => element["Codigo"]==num_prov)["net"];
-      } catch (error) {
-        
+    .data(provincias.features)
+    .on("click",function(d){
+      selected_id=d["properties"]["cod_prov"]
+      update_map()
+      update_splom(splom_size,splom_padding)
+      if (type =="flow") {
+        var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
+        total = get_total(selected_id);
+        $("#where").text("People from " +name_prov_selected+" moving away: "+ total);
       }
-      d3.select(this)
-        .style("fill","#222831")
-        $("#where").text("net "+name_province+" = "+value)
-    }
-    if (type=="urbanizacion"){
-      var province_id = d["properties"]["cod_prov"];
+    })
+    .on("mouseover",function(d) {
+      if (type =="flow"){
+        var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
+        var name_destino = d["properties"]["name"] 
+        var province_id =  d["properties"]["cod_prov"]
+        var numEmigrants = splom_data.find(element => element["Codigo"]==selected_id)[province_id]
+        d3.select(this)
+          .style("fill","#222831")
+          $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmigrants);
+        update_barchar(numEmigrants, name_destino);
+      }
+      if (type=="net"){
         try {
-          var rural=splom_data.find(element => element["Codigo"]==province_id)["Ruralidad"]
-        }
-        catch(error) {
-          console.log(error)
-        }
-        switch (rural) {
-          case "PU": 
-            rural_text = "primarily urban";
-            break;
-          case "PR": 
-            rural_text = "primarily rural";
-            break;
-          case "IN": 
-            rural_text = "intermidiate";
-            break;
+          num_prov= d["properties"]["cod_prov"];
+          name_province= d["properties"]["name"];
+          value = splom_data.find(element => element["Codigo"]==num_prov)["net"];
+        } catch (error) {
         }
         d3.select(this)
           .style("fill","#222831");
-          var name_hover = splom_data.find(element => element["Codigo"]==province_id)["Provincia"];
-        $("#where").text(name_hover +" is " + rural_text + ".");
-      
-    }
-   
-  })
-  .on("mouseout",function(d){
-    if (type == "flow"){
-      var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
-      var name_destino = d["properties"]["name"]
-      var province_id =  d["properties"]["cod_prov"]
-      var numEmmigrants = splom_data.find(element => element["Codigo"]==selected_id)[province_id]
-      d3.select(this)
-        .style("fill",function(d){
-          
-          if (province_id==selected_id)
-            return "black"
-          if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1){
-
-            return "white"
-
-          }
-          if (province_id <51){
-            return linColor(splom_data.find(element => element["Codigo"]==selected_id)[province_id])
-        }
-        })
-        $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmmigrants)
-    }
-    if (type =="urbanizacion"){
-      d3.select(this)
-        .style("fill",function(d){
-          var province_id = d["properties"]["cod_prov"];
+        $("#where").text("net "+name_province+" = "+value)
+      }
+      if (type=="urbanizacion"){
+        var province_id = d["properties"]["cod_prov"];
           try {
             var rural=splom_data.find(element => element["Codigo"]==province_id)["Ruralidad"]
           }
           catch(error) {
-            console.error(d["properties"]["cod_prov"]);
             console.log(error)
           }
-          var province_id = d["properties"]["cod_prov"]
-          if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
-            return "white"
-          return catColors(rural)
-
-      })
-    }
-    if (type == "net"){
-      d3.select(this)
-        .style("fill",function(d){num_prov= d["properties"]["cod_prov"];
+          switch (rural) {
+            case "PU": 
+              rural_text = "primarily urban";
+              break;
+            case "PR": 
+              rural_text = "primarily rural";
+              break;
+            case "IN": 
+              rural_text = "intermidiate";
+              break;
+          }
+          d3.select(this)
+            .style("fill","#222831");
+          var name_hover = splom_data.find(element => element["Codigo"]==province_id)["Provincia"];
+          $("#where").text(name_hover +" is " + rural_text + ".");
+      }
+    })
+    .on("mouseout",function(d){
+      if (type == "flow"){
+        var name_prov_selected = splom_data.find(element => element["Codigo"]==selected_id)["Provincia"];
+        var name_destino = d["properties"]["name"]
+        var province_id =  d["properties"]["cod_prov"]
+        var numEmigrants = splom_data.find(element => element["Codigo"]==selected_id)[province_id]
+        d3.select(this)
+          .style("fill",function(d){
+            if (province_id==selected_id)
+              return "black"
+            if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1){
+              return "white"
+            }
+            if (province_id <51){
+              return linColor(splom_data.find(element => element["Codigo"]==selected_id)[province_id])
+            }
+          });
+        $("#who").text("People from "+name_prov_selected+" to "+name_destino+": "+numEmigrants);
+      }
+      if (type =="urbanizacion"){
+        d3.select(this)
+          .style("fill",function(d){
+            var province_id = d["properties"]["cod_prov"];
+            try {
+              var rural=splom_data.find(element => element["Codigo"]==province_id)["Ruralidad"]
+            }
+            catch(error) {
+              console.error(d["properties"]["cod_prov"]);
+              console.log(error)
+            }
+            var province_id = d["properties"]["cod_prov"]
+            if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
+              return "white";
+            return catColors(rural)
+        })
+      }
+      if (type == "net"){
+        d3.select(this)
+          .style("fill",function(d){
+            num_prov= d["properties"]["cod_prov"];
+            try {
+              value = splom_data.find(element => element["Codigo"]==num_prov)["net"];
+            } catch (error) {
+            }
+            var province_id = d["properties"]["cod_prov"]
+            if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
+              return "white";
+            return scaleColor(value)
+        })
+      } 
+    })
+    .transition()
+    .style("fill", function(d){
+      var province_id =  d["properties"]["cod_prov"];
+      if (type=="urbanizacion"){
         try {
-          value = splom_data.find(element => element["Codigo"]==num_prov)["net"];
-        } catch (error) {
-          
+        var rural=splom_data.find(element => element["Codigo"]==province_id)["Ruralidad"]
         }
-        var province_id = d["properties"]["cod_prov"]
+        catch(error) {          
+        }
+        if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1){
+          return "white"
+        }
+        return catColors(rural)
+      }
+      if(type=="flow"){
+        if (province_id==selected_id)
+          return "black"
         if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
           return "white"
+        if (province_id <51){
+          return linColor(splom_data.find(element => element["Codigo"]==selected_id)[province_id])
+        }
+      }
+      if (type=="net"){
+        try {
+          value = splom_data.find(element => element["Codigo"]==province_id)["net"];
+        } catch (error) {
+        }
+        if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
+          return "white";
         return scaleColor(value)
-    })} 
-  })
-  .transition()
-  .style("fill", function(d){
-    var province_id =  d["properties"]["cod_prov"]
-    if (type=="urbanizacion"){
-      try {
-      var rural=splom_data.find(element => element["Codigo"]==province_id)["Ruralidad"]
       }
-      catch(error) {
-        
-      }
-      if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1){
-        return "white"
-      }
-      return catColors(rural)
-    }
-    if(type=="flow"){
-      if (province_id==selected_id)
-        return "black"
-      if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
-        return "white"
-      if (province_id <51){
-      return linColor(splom_data.find(element => element["Codigo"]==selected_id)[province_id])
-      }
-    }
-    if (type=="net"){
-      try {
-        value = splom_data.find(element => element["Codigo"]==province_id)["net"];
-      } catch (error) {
-      }
-      if (selecting&selected_provinces.indexOf(parseInt(province_id))==-1)
-        return "white"
-      return scaleColor(value)
-    }
-
   });
+
+  //Remove old legend and draw the new one
   $(".legend").remove(); 
   $("#myGradient").remove();
   draw_legend(domain,type);
+
+  //Draw bar chart if 'Migration Flow' mode is selected
   draw_barchar("splom");
 }
 
 
-//Devuelve el máximo y mínimo valor de gente que ha emigrado a alguna provincia
+//Returns the max and min value of people emigrating from the specified province
 function get_domain(procedencia){
-  arr = []
+  arr = [];
   for(i=1;i<51;i++){
     if (i != selected_id)
-      arr.push(splom_data.find(element => element["Codigo"]==procedencia)[i])
+      arr.push(splom_data.find(element => element["Codigo"]==procedencia)[i]);
   }
   return d3.extent(arr)
 }
 
+//Returns the overall amount of people emigrating from the specified province
 function get_total(selected_id){
   var province = splom_data.find(element => element["Codigo"]==selected_id)
-  var total = 0
+  var total = 0;
   for (i=1;i<51;i++){
     total = total+province[i]
   }
   return total
-  
 }
 
-
+//Function to retrieve the value of the buttons
 function button_listner(){
-  const buttons_map = d3.selectAll('.time_selection');
+
+  //Map mode selection
+  const buttons_map = d3.selectAll('.mode_selection');
   buttons_map.on('change', function(d) {
     type = this.value;
     update_map();
     update_splom(splom_size,splom_padding);
   })
+
+  //Splom variables selection
   const selection_splom = d3.selectAll(".splom_select")
   selection_splom.on('change', function(d){
-    for (i =0; i<4; i++){
-      var splom_name = "#"+ i+"splom"
-      if ($(splom_name).val()=="Flow"){
-        flow_splom=true
-        flow_splom_column=i
-      }
-
-    }
     var column = this.id[0]
     var value = this.value; 
-    columns[column]=value
-    update_splom(splom_size,splom_padding)
-    
+    columns[column]=value;
+    update_splom(splom_size,splom_padding);
   })
+
+  //Bar chart variable comparison selection
   $("#var_select").on('change', function(){
-    comp = $(this).val(); console.log(comp);
+    comp = $(this).val(); 
     update_barchar_comp(id_province_select_ant);
   })
+
+  //Bar chart provinces selection
   $('#province_select').on('change',function() {
-    var id_province_select = $(this).val(); console.log(id_province_select);
+    var id_province_select = $(this).val(); console.log(comp);
     update_barchar_comp(id_province_select);
   });
 }
 
-
+//Draws the legend for each map mode and province selected
 function draw_legend(domain,type){
   
   if (type=="flow") {
@@ -393,8 +372,7 @@ function draw_legend(domain,type){
         .range([0, legend_width])
         .domain(extent);
   
-    var xTicks = domain;
-  
+    var xTicks = domain;  
     var xAxis = d3.axisBottom(xScale)
         .tickSize(legend_height * 2)
         .tickValues(xTicks);
@@ -402,7 +380,6 @@ function draw_legend(domain,type){
     var g = svg.append("g")
       .attr("class","legend");
   
-    //var defs = svg.append("defs");
     var linearGradient = svg.append("linearGradient").attr("id", "myGradient");
     linearGradient.selectAll("stop")
       .data(legend_data)
@@ -423,14 +400,11 @@ function draw_legend(domain,type){
       .attr("class", "zAxis")
       .call(xAxis)
       .select(".domain").remove();
-    //return xAxis;
 
     var gLegendWidth = $('g.legend').get(0).getBBox().width;
     var gLegendHeight = $('g.legend').get(0).getBBox().height;
-
     var positionX = svg1Width - gLegendWidth - 10300/svg1Height;
     var positionY = svg1Height - gLegendHeight - 10800/svg1Height;
-
     g.attr("transform", "translate("+positionX+","+positionY+")");
     return xAxis;
   }
@@ -446,7 +420,7 @@ function draw_legend(domain,type){
           return "Intermediate Area"
       }
     }
-    var size=legend_height*3
+    var size=legend_height*3;
     var g = svg.append("g")
       .attr("class","legend");
 
@@ -454,7 +428,6 @@ function draw_legend(domain,type){
       .data(rural_code)
       .enter()
       .append("rect")
-      //.attr("x", 100)
       .attr("y", function(d,i){ return i*(size+5)}) 
       .attr("width", size)
       .attr("height", size)
@@ -471,14 +444,12 @@ function draw_legend(domain,type){
       .attr("text-anchor", "left")
       .style("alignment-baseline", "middle")
       .style("font-weight", "bold")
-      .style("font-family",'Glegoo-Regular');
+      .style("font-size","16px");
 
     gLegendWidth = $('g.legend').get(0).getBBox().width;
     gLegendHeight = $('g.legend').get(0).getBBox().height;
-  
     var positionX = svg1Width - gLegendWidth - 10300/svg1Height;
     var positionY = svg1Height - gLegendHeight - 10800/svg1Height;
-  
     g.attr("transform", "translate("+positionX+","+positionY+")");
   }
 
@@ -493,15 +464,13 @@ function draw_legend(domain,type){
         .domain(extent);
   
     var xTicks = scaleColor.domain();
-  
     var xAxis = d3.axisBottom(xScale)
         .tickSize(legend_height * 2)
         .tickValues(xTicks);
 
     var g = svg.append("g")
       .attr("class","legend");
-  
-    //var defs = svg.append("defs");
+
     var linearGradient = svg.append("linearGradient").attr("id", "myGradient");
     linearGradient.selectAll("stop")
       .data(legend_data)
@@ -526,10 +495,8 @@ function draw_legend(domain,type){
 
     var gLegendWidth = $('g.legend').get(0).getBBox().width;
     var gLegendHeight = $('g.legend').get(0).getBBox().height;
-  
     var positionX = svg1Width - gLegendWidth - 10300/svg1Height;
     var positionY = svg1Height - gLegendHeight - 10800/svg1Height;
-  
     g.attr("transform", "translate("+positionX+","+positionY+")");
 
     return xAxis;
@@ -559,6 +526,9 @@ function resize(){
     .attr("height", height);
   svg1Width = $("#svg1").width();
   svg1Height = $("#svg1").height();
+  ag1 = $("#info").width();
+  d3.select('#info').select('svg')
+    .attr("width",ag1);
   draw_legend(domain,type);
   d3.selectAll("path").attr('d', path);
   update_splom(splom_size,splom_padding);
@@ -567,7 +537,7 @@ function resize(){
     .style("height",+(25/269)*svg1Height+20650/269+"px")
     .style("top",+(86/273)*svg1Height+86.5+"px");
 
-    draw_legend_barchar();
+  draw_legend_barchar();
 }
 
 
@@ -582,20 +552,14 @@ function uncheck(){
   $("#2splom").val('PIB');
   $("#3splom").val('PresupuestosNorm');
 
-  $("#var_select").val('Agrario');
+  $("#var_select").val('');
   $("#province_select").val([""]);
 }
 
 
 function draw_splom(size, padding){
 
-  
-  var province_id =  selected_id
-
-  
-  if (flow_splom)
-    columns[flow_splom_column] = province_id
-  var data=splom_data
+  var data=splom_data;
 
   var svg = d3.select("#svg_splom")
               .append("svg")
@@ -612,12 +576,10 @@ function draw_splom(size, padding){
                                   }))
                                   .range([padding/2,size-padding/2]));
 
-
-                                  
+                            
   var yScale = columns.map(c => d3.scaleLinear()
                       .domain(d3.extent(data,d => d[c]))
                       .range([size-padding/2,padding/2]));
-
                       
   var xAxis = d3.axisBottom()
                   .ticks(6)
@@ -655,8 +617,6 @@ function draw_splom(size, padding){
               
   y.select(".domain").remove();
   y.selectAll(".tick line").attr("stroke","#ddd");
-
-
                   
   var cell = svg.append("g")
                   .selectAll("g")
@@ -665,9 +625,7 @@ function draw_splom(size, padding){
                   .append("g")
                   .attr("transform",([i,j]) => "translate("+i*size+","+j*size+")");
                   
-                  
-
-                  
+                                
   cell.append("rect")
       .attr("fill","none")
       .attr("stroke","#aaa")
@@ -735,13 +693,8 @@ function draw_splom(size, padding){
           case "natalidad":
             return "Birthrate"
         }
-        for (province in nombres_provincias){
-          if (nombres_provincias[province]["id"]==d)
-            return "People leaving "+nombres_provincias[province]["nm"]
-        }
       });
 
-      
   var brush = d3.brush()
                   .extent([[padding/2,padding/2],[size-padding/2,size-padding/2]]);
 
@@ -779,14 +732,13 @@ function draw_splom(size, padding){
       });
   });
 
-
   brush.on("end",function(){
       if(d3.event.selection != null)
           return;
-      selected_provinces=[] 
+      selected_provinces=[] ;
       circle.attr("fill",d => splom_color(type,d));
-      selecting=false
-      update_map()
+      selecting=false;
+      update_map();
   });
 
   function splom_color(type,d){
@@ -828,7 +780,7 @@ function draw_barchar(caso) {
           labels: ylabels,
           datasets: [{
             data: barchar_data,
-            label: '# of Emmigrants from '+ name_prov_selected,
+            label: '# emmigrants',
             backgroundColor: "#008000",
             borderColor: '#000000',
             borderWidth: 1
@@ -866,7 +818,7 @@ function draw_barchar(caso) {
           labels: province_select,
           datasets: [{
             data: comp_data,
-            //label: ["rural","intermidiate","urban"],
+            barPercentage: 0.7,
             borderColor: '#000000',
             borderWidth: 1
           }]
@@ -886,7 +838,7 @@ function draw_barchar(caso) {
           },
           title: {
             display: true,
-            text: "Agriculture workers (%)",
+            text: "",
           }
         }
       });
@@ -895,25 +847,26 @@ function draw_barchar(caso) {
   
 }
 
-function update_barchar(numEmmigrants, name_destino) {
-  //if (name_destino == "Santa Cruz de Tenerife") {name_destino="Tenerife";}
+function update_barchar(numEmigrants, name_destino) {
   if (barchar_data.length > 2) {
-    barchar_data.splice(1, 1, numEmmigrants);
+    barchar_data.splice(1, 1, numEmigrants);
     ylabels.splice(1, 1, name_destino);
   }
   else {
-    barchar_data.splice(1, 0, numEmmigrants);
+    barchar_data.splice(1, 0, numEmigrants);
     ylabels.splice(1, 0, name_destino);
   }
   window.myHorizontalBar.update();
 }
 
+//Update bar chart
 function update_barchar_comp(id_province_select) {
   var long = id_province_select.length;
   var long_ant = id_province_select_ant.length;
 
-  if (JSON.stringify(id_province_select)==JSON.stringify(id_province_select_ant)) { //no han cambiado las provincias
-    comp_data.splice(0,comp_data.length); //IT WORKS
+  //provinces are the same
+  if (JSON.stringify(id_province_select)==JSON.stringify(id_province_select_ant)) {
+    comp_data.splice(0,comp_data.length);
     for (var i=0; i<long; i++) {
       var cod = id_province_select[i];
       var value = splom_data.find(element => element["Codigo"]==cod)[comp];
@@ -939,8 +892,6 @@ function update_barchar_comp(id_province_select) {
           return "Net migration normalized"
         case "Doctores18":
           return "# Doctors"
-        case "Flow":
-          return "Migration Flow"
         case "quiebras":
           return "Banckrupcies"
         case "quiebraspc":
@@ -955,8 +906,9 @@ function update_barchar_comp(id_province_select) {
     }
     window.myBar.options.title.text = get_name(comp);
   }
-  else { //han cambiado las provincias
-    var npi = long - id_province_select_ant.length; // +1 añadir, -1 quitar
+  //provinces have been modified
+  else {
+    var npi = long - long_ant; // +1:add, -1: subtract
     if (npi == 1) {
       for (var i=0; i<long; i++) {
         if (id_province_select[i] != id_province_select_ant[i]) {

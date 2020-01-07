@@ -7,10 +7,175 @@
   <link href="https://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700&display=swap" rel="stylesheet"> 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css">
-  <link rel="stylesheet" href="spain.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:700,300">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
   <link rel="stylesheet" href="spain.css">
 </head>
 <body>
+
+
+  <div class="tutorial">
+    <link rel="stylesheet" href="tutorial/tutorial.css">
+    <div class='walkthrough shows reveal'>
+      <div class='walkthrough-pagination'>
+        <a class='dot active'></a>
+        <a class='dot'></a>
+        <a class='dot'></a>
+        <a class='dot'></a>
+        <a class='dot'></a>
+        <a class='dot'></a>
+      </div>
+      <div class='walkthrough-body'>
+        <ul class='screens animate'>
+          <li class='screen active'>
+            <div class='image'>
+              <div class='media logo'>
+                <img class='icon' style='width: 90%;' src='tutorial/images/map_spain.png'>
+              </div>
+            </div>
+            <div class="text" style="padding: 2% 0">
+              <h3>
+                Map
+              </h3>
+              <p>Map to interact with all the provinces. Choose a mode:</p>
+              <ul class="a">
+                <li>Migration Flow</li>
+                <li>Net Migration</li>
+                <li>Urbanization</li>
+              </ul>
+              <p>Inspect the results in the text box below the map.</p>
+              <img style='width: 90%;' src='tutorial/images/textbox.png'>
+            </div>
+          </li>
+          <li class='screen'>
+            <div class='image'>
+              <div class='media map1'>
+                <img class='icon' style='width: 88%;' src='tutorial/images/map_flow.png'>
+              </div>
+            </div>
+            <div class="text" style="height: 95%; padding: 1% 0;">
+            <h3>
+              Map
+              <br>Migration Flow</br>
+            </h3>
+            <p style=" margin-left: 10px; margin-bottom: 10px;">Data of people emigrating from an origin province to a destination one are shown in the text box and on a bar chart.</br>
+            <p style="margin-top: 10px; ">The bar chart compares the number of emigrants of the following provinces: </p>
+              <ul class="b" style="line-height: 1.4em; margin-top: -5px;">
+                <li>Min number of emigrants</li>
+                <li>Selected destination</li>
+                <li>Max number of emigrants</li>
+              </ul>
+              <img style='position: absolute; bottom: 122px; width: 25%; right: 400px' src='tutorial/images/barchar_migration.png'>
+            </p>
+            <h5>Interaction</h5>
+            <ul class="b">
+              <li><strong>Click</strong>: select an <strong>origin</strong> province.</li>
+              <li><strong>Hover</strong>: select a <strong>destination</strong> province.</li>
+            </ul>
+            </div>
+          </li>
+          <li class='screen'>
+            <div class='image'>
+              <div class='media map1'>
+                <img class='icon' style='width: 88%;' src='tutorial/images/map_net.png'>
+              </div>
+            </div>
+            <div class="text" style="padding: 6% 0;">
+            <h3>
+              Map
+              <br>Net Migration</br>
+            </h3>
+            <p> </p>
+            <p style=" margin-left: 5%;">
+              Net migration rate is the difference between the number of immigrants and the number of emigrants throughout a year.</p>
+            <h5 style="margin-left: 7%;">Interaction</h5>
+            <ul class="b">
+              <li><strong>Hover</strong>: net migration of the province printed in the text box.</li>
+            </ul>
+            </div>
+          </li>
+          <li class='screen'>
+            <div class='image'>
+              <div class='media map1'>
+                <img class='icon' style='width: 88%;' src='tutorial/images/map_urb.png'>
+              </div>
+            </div>
+            <div class="text" style="padding: 3% 0;">
+            <h3>
+              Map
+              <br>Urbanization</br>
+            </h3>
+            <p> </p>
+            <p style=" margin-left: 5%;">
+              It displays the urbanization of a province, according to the classification:</p>
+              <ul class="b" style="line-height: 1.4em;">
+                <li>Urban Area</li>
+                <li>Intermidiate Area</li>
+                <li>Rural Area</li>
+              </ul>
+            <p></p>
+            <h5 style="margin-left: 8%;">Interaction</h5>
+            <ul class="b">
+              <li><strong>Hover</strong>: rural classification of the province printed in the text box.</li>
+            </ul>
+            </div>
+          </li>
+          <li class='screen'>
+            <div class='image'>
+              <div class='media splom'>
+                <img class='icon' style='width: 80%' src='tutorial/images/splom.png'>
+              </div>
+            </div>
+            <div class="text" style="padding: 3% 0;">
+              <h3>
+                Splom
+              </h3>
+              <p style="margin-bottom: 10px;">Splom chart to determine if there is any correlation between four selected variables.
+              </br>  Color of the dots is updated according to the map mode selected.</p>
+              <p style="margin-top: 10px;">The variables can be chosen using these buttons: </br>
+              <img style='width: 100%;' src='tutorial/images/variables.png'>
+              <br> You can also select a group of points in any of the scatterplots.</br>
+              The corresponding provinces are shown coloured on the map.</br>
+              </p>
+            </div>
+          </li>
+          <li class='screen'>
+            <div class='image'>
+              <div class='media comp'>
+                <img class='icon' style="width: 67%;" src='tutorial/images/barchar.png'>
+              </div>
+            </div>
+            <div class="text" style="padding: 5% 0;">
+            <h3>
+              Variable comparison
+            </h3>
+            <p>Compare a specific variable between provinces.</p></br>
+            <img style="float: left; margin-left: 52.5px;" src="tutorial/images/choose_var.png">
+            <p style="text-align: right; margin-right: 145px; margin-top: 6px;">Choose a variable.</p>
+            <p style="margin: 0px"></br></p>
+            <img style="float: left; margin-left: 50px;"src="tutorial/images/choose_prov.png">
+            <p style="text-align: right; margin-right: 65px;  margin-top: 6px;">Choose up to three provinces.</p>
+            </div>
+          </li>
+          </li>
+        </ul>
+        <button class='prev-screen'>
+          <i class='icon-angle-left'></i>
+        </button>
+        <button class='next-screen'>
+          <i class='icon-angle-right'></i>
+        </button>
+      </div>
+      <div class='walkthrough-footer'>
+        <button class='button next-screen'>Next</button>
+        <button class='button finish close' disabled='true'>Finish</button>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="tutorial/tutorial.js"></script>
+  </div>
 
   <nav class="navbar navbar-default" style="margin-bottom: 10px;">
       <div class="container-fluid" style="font-weight: 600">
@@ -20,211 +185,202 @@
           <ul class="nav navbar-nav">
             <li class="active" style="font-size: 16px;"><a href="#splom_tab">Splom</a></li>
             <li style="font-size: 16px;"><a href="#comp_tab">Variable Comparison</a></li>
+            <li class="open-walkthrough" style="font-size: 16px;"><a href="#tutorial">Tutorial</a></li>
           </ul>
       </div>
   </nav>
 
   <div id="buttons">
-   <!--  <h2 id="title" style="font-weight: bold;">Empty Spain</h1>
- -->
     <form style="padding-left: 15px;">
         <div class="radio">
-          <label><input class="time_selection selection" type="radio" name="time" value="flow"> MIGRATION FLOW</label>
+          <label><input class="mode_selection selection" type="radio" name="time" value="flow"> MIGRATION FLOW</label>
         </div>
         <div class="radio">
-          <label><input class="time_selection selection" type="radio" name="time" value="net"> NET MIGRATION</label>
+          <label><input class="mode_selection selection" type="radio" name="time" value="net"> NET MIGRATION</label>
         </div>
         <div class="radio">
-          <label><input class="time_selection selection" type="radio" name="time" value="urbanizacion"> URBANIZATION</label>
+          <label><input class="mode_selection selection" type="radio" name="time" value="urbanizacion"> URBANIZATION</label>
         </div>
       </form>
   </div>
 
-<div id="splom_tab">  
-  <div class="header">
-    <div class="custom-select">
-      <select id="0splom" class="splom_select selectpicker col-sm-3">
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosNorm">Public spending per capita</option>
-        <option value="Agrario">Agriculture % of workforce</option>
-        <option value="Paro">Unemployment</option>
-        <option value="Poblacion">Population</option>
-        <option value="PIB">GDP per capita</option>
-        <option value="Flow" title="Emigration flow">Emigration flow from selected province</option>
-        <option value="net">Net migration</option>
-        <option value="netnorm">Net migration normalized</option>
-        <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
-        <option value="quiebras">Bankruptcies</option>
-        <option value="quiebraspc">Bankruptcies normalized</option>
-        <option value="imd">R&D businesses</option>
-        <option value="imdnorm">R&D businesses normalized</option>
-        <option value="natalidad">Birth rate</option>
-      </select>
-      <select id="1splom" class="splom_select selectpicker col-sm-3">
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosNorm">Public spending per capita</option>
-        <option value="Agrario">Agriculture % of workforce</option>
-        <option value="Paro">Unemployment</option>
-        <option value="Poblacion">Population</option>
-        <option value="PIB">GDP</option>
-        <option value="Flow" title="Emigration flow">Emigration flow from selected province</option>
-        <option value="net">Net migration</option>
-        <option value="netnorm">Net migration normalized</option>
-        <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
-        <option value="quiebras">Bankruptcies</option>
-        <option value="quiebraspc">Bankruptcies normalized</option>
-        <option value="imd">R&D businesses</option>
-        <option value="imdnorm">R&D businesses normalized</option>
-        <option value="natalidad">Birth rate</option>
-      </select>
-      <select id="2splom" class="splom_select selectpicker col-sm-3">
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosNorm">Public spending per capita</option>
-        <option value="Agrario">Agriculture % of workforce</option>
-        <option value="Paro">Unemployment</option>
-        <option value="Poblacion">Population</option>
-        <option value="PIB">GDP</option>
-        <option value="Flow" title="Emigration flow">Emigration flow from selected province</option>
-        <option value="net">Net migration</option>
-        <option value="netnorm">Net migration normalized</option>
-        <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
-        <option value="quiebras">Bankruptcies</option>
-        <option value="quiebraspc">Bankruptcies normalized</option>
-        <option value="imd">R&D businesses</option>
-        <option value="imdnorm">R&D businesses normalized</option>
-        <option value="natalidad">Birth rate</option>
-      </select>
-      <select id= "3splom" class="splom_select selectpicker col-sm-3"> 
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosNorm">Public spending per capita</option>
-        <option value="Agrario">Agriculture % of workforce</option>
-        <option value="Paro">Unemployment</option>
-        <option value="Poblacion">Population</option>
-        <option value="PIB">GDP</option>
-        <option value="Flow" title="Emigration flow">Emigration flow from selected province</option>
-        <option value="net">Net migration</option>
-        <option value="netnorm">Net migration normalized</option>
-        <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
-        <option value="quiebras">Bankruptcies</option>
-        <option value="quiebraspc">Bankruptcies normalized</option>
-        <option value="imd">R&D businesses</option>
-        <option value="imdnorm">R&D businesses normalized</option>
-        <option value="natalidad">Birth rate</option>
-      </select>
+  <div id="splom_tab">  
+    <div class="header">
+      <div class="custom-select">
+        <select id="0splom" class="splom_select selectpicker col-sm-3">
+          <option value="PresupuestosTot">Public spending</option>
+          <option value="PresupuestosNorm">Public spending per capita</option>
+          <option value="Agrario">Agriculture % of workforce</option>
+          <option value="Paro">Unemployment</option>
+          <option value="Poblacion">Population</option>
+          <option value="PIB">GDP per capita</option>
+          <option value="net">Net migration</option>
+          <option value="netnorm">Net migration normalized</option>
+          <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
+          <option value="quiebras">Bankruptcies</option>
+          <option value="quiebraspc">Bankruptcies normalized</option>
+          <option value="imd">R&D businesses</option>
+          <option value="imdnorm">R&D businesses normalized</option>
+          <option value="natalidad">Birth rate</option>
+        </select>
+        <select id="1splom" class="splom_select selectpicker col-sm-3">
+          <option value="PresupuestosTot">Public spending</option>
+          <option value="PresupuestosNorm">Public spending per capita</option>
+          <option value="Agrario">Agriculture % of workforce</option>
+          <option value="Paro">Unemployment</option>
+          <option value="Poblacion">Population</option>
+          <option value="PIB">GDP</option>
+          <option value="net">Net migration</option>
+          <option value="netnorm">Net migration normalized</option>
+          <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
+          <option value="quiebras">Bankruptcies</option>
+          <option value="quiebraspc">Bankruptcies normalized</option>
+          <option value="imd">R&D businesses</option>
+          <option value="imdnorm">R&D businesses normalized</option>
+          <option value="natalidad">Birth rate</option>
+        </select>
+        <select id="2splom" class="splom_select selectpicker col-sm-3">
+          <option value="PresupuestosTot">Public spending</option>
+          <option value="PresupuestosNorm">Public spending per capita</option>
+          <option value="Agrario">Agriculture % of workforce</option>
+          <option value="Paro">Unemployment</option>
+          <option value="Poblacion">Population</option>
+          <option value="PIB">GDP</option>
+          <option value="net">Net migration</option>
+          <option value="netnorm">Net migration normalized</option>
+          <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
+          <option value="quiebras">Bankruptcies</option>
+          <option value="quiebraspc">Bankruptcies normalized</option>
+          <option value="imd">R&D businesses</option>
+          <option value="imdnorm">R&D businesses normalized</option>
+          <option value="natalidad">Birth rate</option>
+        </select>
+        <select id= "3splom" class="splom_select selectpicker col-sm-3"> 
+          <option value="PresupuestosTot">Public spending</option>
+          <option value="PresupuestosNorm">Public spending per capita</option>
+          <option value="Agrario">Agriculture % of workforce</option>
+          <option value="Paro">Unemployment</option>
+          <option value="Poblacion">Population</option>
+          <option value="PIB">GDP</option>
+          <option value="net">Net migration</option>
+          <option value="netnorm">Net migration normalized</option>
+          <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
+          <option value="quiebras">Bankruptcies</option>
+          <option value="quiebraspc">Bankruptcies normalized</option>
+          <option value="imd">R&D businesses</option>
+          <option value="imdnorm">R&D businesses normalized</option>
+          <option value="natalidad">Birth rate</option>
+        </select>
 
-    </div>
-  </div>
-  <div class="clearfix">
-    <div id="svg_map">
-      <div id="chart-container">
-        <canvas id="myChart" ></canvas>
       </div>
     </div>
-    <div id="svg_splom">
+    <div class="clearfix">
+      <div id="svg_map">
+        <div id="chart-container">
+          <canvas id="myChart" ></canvas>
+        </div>
+      </div>
+      <div id="svg_splom">
+      </div>
+      <div id="info">
+      </div> 
     </div>
-    <div id="info">
-      <!-- <b id="where"></b><br/>
-      <b id="who"></b> -->
-    </div> 
   </div>
-</div>
 
-<div id="comp_tab"> 
-  <h2 class="title" style="font-weight: bold;">Comparison</h2> 
-  <h4 class="subtitle">Choose up to 3 provinces to compare the variable desired</h6>
-  <div class="clearfix">
-  <div class="custom-select2">
-    <div>
-      <button type="button" id="deselect" class="btn">Deselect All</button>
+  <div id="comp_tab"> 
+    <h2 class="title" style="font-weight: bold;">Comparison</h2> 
+    <h4 class="subtitle">Choose up to 3 provinces to compare the variable desired</h4>
+    <div class="clearfix" style="height: 520px;">
+      <div class="custom-select2">
+        <div>
+          <button type="button" id="deselect" class="btn">Deselect All</button>
+        </div>
+        <div id="comp1">
+          <select id="province_select" class="selectpicker comp_select dropdown" data-dropup-auto="false" multiple title='Choose a province' data-max-options="3" data-live-search="true">
+              <optgroup label="Urban" >
+                <option data-tokens="urban" value="08">Barcelona</option>
+                <option data-tokens="urban" value="20">Guipúzcoa</option>
+                <option data-tokens="urban" value="28">Madrid</option>
+                <option data-tokens="urban" value="29">Málaga</option>
+                <option data-tokens="urban" value="41">Sevilla</option>
+                <option data-tokens="urban" value="46">Valencia</option>
+                <option data-tokens="urban" value="48">Vizcaya</option>
+                <option data-tokens="urban" value="50">Zaragoza</option>
+              </optgroup>
+              <optgroup label="Intermidiate">
+                <option data-tokens="intermidiate" value="01">Álava</option>
+                <option data-tokens="intermidiate" value="03">Alicante</option>
+                <option data-tokens="intermidiate" value="04">Almeria</option>
+                <option data-tokens="intermidiate" value="33">Asturias</option>
+                <option data-tokens="intermidiate" value="05">Ávila</option>
+                <option data-tokens="intermidiate" title="Baleares" value="07">Islas Baleares</option>
+                <option data-tokens="intermidiate" value="09">Burgos</option>
+                <option data-tokens="intermidiate" value="11">Cádiz</option>
+                <option data-tokens="intermidiate" value="39">Cantabria</option>
+                <option data-tokens="intermidiate" value="12">Castellón</option>
+                <option data-tokens="intermidiate" value="14">Cordoba</option>
+                <option data-tokens="intermidiate" value="15">A Coruña</option>
+                <option data-tokens="intermidiate" value="17">Girona</option>
+                <option data-tokens="intermidiate" value="18">Granada</option>
+                <option data-tokens="intermidiate" value="21">Huelva</option>
+                <option data-tokens="intermidiate" value="24">León</option>
+                <option data-tokens="intermidiate" value="26">La Rioja</option>
+                <option data-tokens="intermidiate" value="30">Murcia</option>
+                <option data-tokens="intermidiate" value="31">Navarra</option>
+                <option data-tokens="intermidiate" value="34">Palencia</option>
+                <option data-tokens="intermidiate" value="35">Las Palmas</option>
+                <option data-tokens="intermidiate" value="36">Pontevedra</option>
+                <option data-tokens="intermidiate" value="37">Salamanca</option>
+                <option data-tokens="intermidiate" value="38" title="Tenerife">Santa Cruz de Tenerife</option>
+                <option data-tokens="intermidiate" value="43">Tarragona</option>
+                <option data-tokens="intermidiate" value="47">Valladolid</option>
+              </optgroup>
+              <optgroup label="Rural" data-tokens="rural">
+                <option data-tokens="rural" value="2">Albacete</option>
+                <option data-tokens="rural"value="6">Badajoz</option>
+                <option data-tokens="rural" value="10">Cáceres</option>
+                <option data-tokens="rural" value="13">Ciudad Real</option>
+                <option data-tokens="rural" value="16">Cuenca</option>
+                <option data-tokens="rural" value="19">Guadalajara</option>
+                <option data-tokens="rural" value="22">Huesca</option>
+                <option data-tokens="rural" value="23">Jaén</option>
+                <option data-tokens="rural" value="25">Lleida</option>
+                <option data-tokens="rural" value="27">Lugo</option>
+                <option data-tokens="rural" value="32">Ourense</option>
+                <option data-tokens="rural" value="40">Segovia</option>
+                <option data-tokens="rural" value="42">Soria</option>
+                <option data-tokens="rural" value="44">Teruel</option>
+                <option data-tokens="rural" value="45">Toledo</option>
+                <option data-tokens="rural" value="49">Zamora</option>
+              </optgroup>
+          </select>
+        </div>
+        <div id="comp2">
+          <select id="var_select" class="selectpicker comp_select dropdown" data-dropup-auto="false" title='Choose a variable'>
+            <option value="PresupuestosTot">Public spending</option>
+            <option value="PresupuestosNorm">Public spending per capita</option>
+            <option value="Agrario">Agriculture % of workforce</option>
+            <option value="Paro">Unemployment</option>
+            <option value="Poblacion">Population</option>
+            <option value="PIB">GDP</option>
+            <option value="net">Net migration</option>
+            <option value="netnorm">Net migration normalized</option>
+            <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
+            <option value="quiebras">Bankruptcies</option>
+            <option value="quiebraspc">Bankruptcies normalized</option>
+            <option value="imd">R&D businesses</option>
+            <option value="imdnorm">R&D businesses normalized</option>
+            <option value="natalidad">Birth rate</option>
+          </select>
+        </div>
+      </div>
+      <div id="comp-container" style="width: 50%; height: 520px; float: left; margin-bottom: 5px;">
+        <canvas id="compChart"></canvas>
+      </div>
+      <div id="legend_barchar">
+      </div>
     </div>
-    <div id="comp1">
-      <select id="province_select" class="selectpicker comp_select dropdown" data-dropup-auto="false" multiple title='Choose a province' data-max-options="3" data-live-search="true">
-          <optgroup label="Urban" >
-            <option data-tokens="urban" value="08">Barcelona</option>
-            <option data-tokens="urban" value="20">Guipúzcoa</option>
-            <option data-tokens="urban" value="28">Madrid</option>
-            <option data-tokens="urban" value="29">Málaga</option>
-            <option data-tokens="urban" value="41">Sevilla</option>
-            <option data-tokens="urban" value="46">Valencia</option>
-            <option data-tokens="urban" value="48">Vizcaya</option>
-            <option data-tokens="urban" value="50">Zaragoza</option>
-          </optgroup>
-          <optgroup label="Intermidiate">
-            <option data-tokens="intermidiate" value="01">Álava</option>
-            <option data-tokens="intermidiate" value="03">Alicante</option>
-            <option data-tokens="intermidiate" value="04">Almeria</option>
-            <option data-tokens="intermidiate" value="33">Asturias</option>
-            <option data-tokens="intermidiate" value="05">Ávila</option>
-            <option data-tokens="intermidiate" title="Baleares" value="07">Islas Baleares</option>
-            <option data-tokens="intermidiate" value="09">Burgos</option>
-            <option data-tokens="intermidiate" value="11">Cádiz</option>
-            <option data-tokens="intermidiate" value="39">Cantabria</option>
-            <option data-tokens="intermidiate" value="12">Castellón</option>
-            <option data-tokens="intermidiate" value="14">Cordoba</option>
-            <option data-tokens="intermidiate" value="15">A Coruña</option>
-            <option data-tokens="intermidiate" value="17">Girona</option>
-            <option data-tokens="intermidiate" value="18">Granada</option>
-            <option data-tokens="intermidiate" value="21">Huelva</option>
-            <option data-tokens="intermidiate" value="24">León</option>
-            <option data-tokens="intermidiate" value="26">La Rioja</option>
-            <option data-tokens="intermidiate" value="30">Murcia</option>
-            <option data-tokens="intermidiate" value="31">Navarra</option>
-            <option data-tokens="intermidiate" value="34">Palencia</option>
-            <option data-tokens="intermidiate" value="35">Las Palmas</option>
-            <option data-tokens="intermidiate" value="36">Pontevedra</option>
-            <option data-tokens="intermidiate" value="37">Salamanca</option>
-            <option data-tokens="intermidiate" value="38" title="Tenerife">Santa Cruz de Tenerife</option>
-            <option data-tokens="intermidiate" value="43">Tarragona</option>
-            <option data-tokens="intermidiate" value="47">Valladolid</option>
-          </optgroup>
-          <optgroup label="Rural" data-tokens="rural">
-            <option data-tokens="rural" value="2">Albacete</option>
-            <option data-tokens="rural"value="6">Badajoz</option>
-            <option data-tokens="rural" value="10">Cáceres</option>
-            <option data-tokens="rural" value="13">Ciudad Real</option>
-            <option data-tokens="rural" value="16">Cuenca</option>
-            <option data-tokens="rural" value="19">Guadalajara</option>
-            <option data-tokens="rural" value="22">Huesca</option>
-            <option data-tokens="rural" value="23">Jaén</option>
-            <option data-tokens="rural" value="25">LLeida</option>
-            <option data-tokens="rural" value="27">Lugo</option>
-            <option data-tokens="rural" value="32">Ourense</option>
-            <option data-tokens="rural" value="40">Segovia</option>
-            <option data-tokens="rural" value="42">Soria</option>
-            <option data-tokens="rural" value="44">Teruel</option>
-            <option data-tokens="rural" value="45">Toledo</option>
-            <option data-tokens="rural" value="49">Zamora</option>
-          </optgroup>
-      </select>
-    </div>
-    <div id="comp2">
-      <select id="var_select" class="selectpicker comp_select dropdown" data-dropup-auto="false">
-        <option value="PresupuestosTot">Public spending</option>
-        <option value="PresupuestosNorm">Public spending per capita</option>
-        <option value="Agrario">Agriculture % of workforce</option>
-        <option value="Paro">Unemployment</option>
-        <option value="Poblacion">Population</option>
-        <option value="PIB">GDP</option>
-        <option value="Flow" title="Emigration flow">Emigration flow from selected province</option>
-        <option value="net">Net migration</option>
-        <option value="netnorm">Net migration normalized</option>
-        <option value="Doctores18" title="Number of doctors">Number of doctors per 10000 people</option>
-        <option value="quiebras">Bankruptcies</option>
-        <option value="quiebraspc">Bankruptcies normalized</option>
-        <option value="imd">R&D businesses</option>
-        <option value="imdnorm">R&D businesses normalized</option>
-        <option value="natalidad">Birth rate</option>
-      </select>
-    </div>
   </div>
-  <div id="comp-container" style="width: 50%; height: 520px; float: left; margin-bottom: 5px;">
-    <canvas id="compChart"></canvas>
-  </div>
-  <div id="legend_barchar">
-  </div>
-  </div>
-</div>
-
 
   
 
