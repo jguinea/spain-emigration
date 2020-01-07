@@ -9,5 +9,5 @@ What are the factors influencing the demographic movements inside Spain? [This v
 * [Chart.js](https://github.com/chartjs/Chart.js) - Bar Chart library.
 * [Tutorial template](https://codepen.io/jebbles/pen/MKoYya) - Tutorial. Credit to Jeff Ham for building a set of walkthrough screens.
 ---
-A project for Data Visualization IN4086 at TU Delft done by Blanca Guillén, Javier Guinea and Maite Ruiz.
+A project for Data Visualization IN4086 at TU Delft done by Blanca Guillén, Javier Guinea and María Teresa Ruiz.
 All code not specified above is own code.
