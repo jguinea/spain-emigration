@@ -5,6 +5,7 @@ What are the factors influencing the demographic movements inside Spain? [This v
 * [D3](https://github.com/d3/d3) - The visualization library.
 * [GeoJson](https://github.com/geojson) - Map data structure.
 * [SPLOM template](https://github.com/Louise777/BrushableScatterplotMatrix-d3) - Credit to Louise777 for bulding a D3v4 scatterplot matrix.
+* [Bootstrap](https://github.com/twbs/bootstrap) - CSS framework for responsive web development.
 * [Chart.js](https://github.com/chartjs/Chart.js) - Bar Chart library.
 * [Tutorial template](https://codepen.io/jebbles/pen/MKoYya) - Tutorial. Credit to Jeff Ham for building a set of walkthrough screens.
 ---

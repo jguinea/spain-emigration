@@ -7,6 +7,7 @@ between different areas.
 ### Built with
 * [D3](https://github.com/d3/d3) - The visualization library.
 * [GeoJson](https://github.com/geojson) - Map data structure.
+* [Bootstrap](https://github.com/twbs/bootstrap) - CSS framework for responsive web development.
 * [SPLOM template](https://github.com/Louise777/BrushableScatterplotMatrix-d3) - Credit to Louise777 for bulding a D3v4 scatterplot matrix.
 * [Chart.js](https://github.com/chartjs/Chart.js) - Bar Chart library.
 * [Tutorial template](https://codepen.io/jebbles/pen/MKoYya) - Tutorial. Credit to Jeff Ham for building a set of walkthrough screens.
@@ -380,7 +381,7 @@ function button_listner(){
   });
 }
 
-//Draws the legend for each map mode
+//Draw the legend for each map mode
 function draw_legend(domain,type){
   
   //On 'Migration Flow' mode, legend changes for every province
